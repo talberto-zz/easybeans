@@ -39,4 +39,12 @@ public class MetaGetter {
   public String getPropertyName() {
     return mProperty.getName();
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MetaGetter [mProperty=" + mProperty + ", mInstanceVariable=" + mInstanceVariable + ", mName=" + mName + ", mType=" + mType + "]";
+  }
 }

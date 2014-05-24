@@ -48,4 +48,16 @@ public class MetaProperty {
   public String getName() {
     return mName;
   }
+
+  public MetaType getType() {
+    return mInstanceVar.getType();
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MetaProperty [mName=" + mName + ", mType=" + mType + "]";
+  }
 }

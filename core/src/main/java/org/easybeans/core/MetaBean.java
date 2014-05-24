@@ -46,4 +46,12 @@ public class MetaBean {
   public MetaClass getMetaClass() {
     return mMetaClass;
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MetaBean [mName=" + mName + ", mProperties=" + mProperties + ", mMetaClass=" + mMetaClass + "]";
+  }
 }

@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>deps</module>
     <module>core</module>
     <module>atg</module>
   </modules>
@@ -26,7 +25,7 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-  
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -34,13 +33,31 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
+
   <scm>
     <connection>scm:git:https://github.com/talberto/easybeans.git</connection>
     <developerConnection>scm:git:https://github.com/talberto/easybeans.git</developerConnection>
     <url>scm:git:https://github.com/talberto/easybeans.git</url>
   </scm>
-  
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.17</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.17</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
@@ -58,6 +75,7 @@
     <objenesis.version>1.2</objenesis.version>
     <atg.version>10.2</atg.version>
     <slf4j.version>1.7.7</slf4j.version>
+    <atgdust.version>1.2.2</atgdust.version>             <!-- the version of the ATGDUST module -->
   </properties>
 
   <dependencyManagement>
@@ -107,6 +125,21 @@
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <!-- ATG dependencies -->
+      <dependency>
+        <groupId>atg.platform</groupId>
+        <artifactId>DAS</artifactId>
+        <version>${atg.version}</version>
+        <classifier>classes</classifier>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>atg.platform</groupId>
+        <artifactId>DAS</artifactId>
+        <version>${atg.version}</version>
+        <classifier>resources</classifier>
+        <scope>provided</scope>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -146,21 +179,11 @@
         <version>${powermock.version}</version>
         <scope>test</scope>
       </dependency>
-
-      <!-- ATG dependencies -->
       <dependency>
-        <groupId>atg.platform</groupId>
-        <artifactId>DAS</artifactId>
-        <version>${atg.version}</version>
-        <classifier>classes</classifier>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>atg.platform</groupId>
-        <artifactId>DAS</artifactId>
-        <version>${atg.version}</version>
-        <classifier>resources</classifier>
-        <scope>provided</scope>
+        <groupId>net.sf.atgdust</groupId>
+        <artifactId>atgdust</artifactId>
+        <version>${atgdust.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

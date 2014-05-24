@@ -50,4 +50,12 @@ public class MetaInstanceVar {
   public MetaType getType() {
     return mType;
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MetaInstanceVar [mName=" + mName + ", mType=" + mType + ", mVisibility=" + mVisibility + ", mDefault=" + mDefault + "]";
+  }
 }

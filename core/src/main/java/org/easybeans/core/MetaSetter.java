@@ -45,4 +45,13 @@ public class MetaSetter {
   public String getPropertyName() {
     return mProperty.getName();
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MetaSetter [mProperty=" + mProperty + ", mInstanceVariable=" + mInstanceVariable + ", mName=" + mName + ", mType=" + mType
+        + ", mArgument=" + mArgument + "]";
+  }
 }

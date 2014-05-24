@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
@@ -16,7 +16,7 @@ public class CodeGenerator {
   private static final String TEMPLATES_BASEDIR = "/org/easybeans/core/template";
 
   STGroup mGroup;
-  Log mLogger = LogFactory.getLog("");
+  Logger mLogger = LoggerFactory.getLogger("");
   
   public CodeGenerator() {
     try {

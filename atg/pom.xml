@@ -12,7 +12,7 @@
   <artifactId>easybeans-atg</artifactId>
   <packaging>jar</packaging>
 
-    <developers>
+  <developers>
     <developer>
       <id>talberto</id>
       <name>Tomas Rodriguez</name>
@@ -23,7 +23,7 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-  
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -31,18 +31,38 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
+
   <scm>
     <connection>scm:git:https://github.com/talberto/easybeans.git</connection>
     <developerConnection>scm:git:https://github.com/talberto/easybeans.git</developerConnection>
     <url>scm:git:https://github.com/talberto/easybeans.git</url>
   </scm>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
     <maven.compiler.target>1.6</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>-Duser.language=en -Duser.locale=US</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <dependency>
@@ -61,10 +81,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     <!-- ATG dependencies -->
     <dependency>
@@ -88,6 +104,12 @@
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- SLF4J Binding -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Easymock -->
     <dependency>
       <groupId>org.easymock</groupId>
@@ -103,6 +125,11 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.atgdust</groupId>
+      <artifactId>atgdust</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

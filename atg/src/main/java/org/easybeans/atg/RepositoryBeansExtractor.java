@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.easybeans.core.MetaBean;
 import org.easybeans.core.MetaProperty;
+import org.easybeans.core.MetaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +13,13 @@ import atg.repository.Repository;
 import atg.repository.RepositoryException;
 import atg.repository.RepositoryItemDescriptor;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 
-public class RepositoryBeansExtractor {
-
+public class RepositoryBeansExtractor {  
   protected Logger mLog = LoggerFactory.getLogger(this.getClass());
       
   public List<MetaBean> extractBeans(Repository pRepo, List<String> pBeanNames) {
@@ -32,6 +35,7 @@ public class RepositoryBeansExtractor {
         }
         
         List<MetaProperty> properties = extractProperties(descriptor);
+        extractedBeans.add(new MetaBean(beanName, properties));
       } catch (RepositoryException e) {
         throw new ExtractionException();
       }
@@ -41,12 +45,26 @@ public class RepositoryBeansExtractor {
   }
 
   private List<MetaProperty> extractProperties(RepositoryItemDescriptor pItemDescriptor) {
-    List<MetaProperty> properties = Lists.newArrayList();
+    List<DynamicPropertyDescriptor> propertyDescriptors = ImmutableList.copyOf(pItemDescriptor.getPropertyDescriptors());
+    List<MetaProperty> properties = Lists.transform(propertyDescriptors, new Function<DynamicPropertyDescriptor, MetaProperty>() {
+      @Override
+      public MetaProperty apply(DynamicPropertyDescriptor pPropDesc) {
+        return extractProperty(pPropDesc);
+      }
+    });
     
-    for(DynamicPropertyDescriptor propDescriptor : pItemDescriptor.getPropertyDescriptors()) {
-      String propertyName = propDescriptor.getName();
-    }
+    return ImmutableList.copyOf(properties);
+  }
+  
+  private MetaProperty extractProperty(DynamicPropertyDescriptor pPropDesc) {
+    String name = pPropDesc.getName();
+    Class<?> type = pPropDesc.getPropertyType();
     
-    return properties;
+    MetaType metaType = MetaType.of(TypeToken.of(type));
+    MetaProperty property = new MetaProperty(name, metaType);
+    
+    mLog.debug("Extracted property [{}]", property);
+    
+    return property;
   }
 }

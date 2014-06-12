@@ -10,7 +10,7 @@ public class SimpleItem {
   /**
    * @return the stringProperty
    */
-  @RepositoryProperty(propertyName = "simpleProperty")
+  @RepositoryProperty(propertyName = "stringProperty")
   public String getStringProperty() {
     return mStringProperty;
   }

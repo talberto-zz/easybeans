@@ -151,6 +151,11 @@ public class RepositoryBeanMapper<T> {
       } catch (RepositoryException e) {
         throw new IllegalArgumentException();
       }
+      
+      if(propertyDescriptor == null) {
+        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pItem));
+      }
+      
       Object repositoryPropertyValue;
       if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
         mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");

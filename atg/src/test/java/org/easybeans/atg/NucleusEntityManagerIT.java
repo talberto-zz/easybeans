@@ -38,13 +38,6 @@ public class NucleusEntityManagerIT {
   public void setUp() throws Exception {
     mLog.info("Start Nucleus.");
     try {
-//      System.setProperty("derby.locks.deadlockTrace", "true");
-//      // Use the DBUtils utility class to get JDBC properties for an in memory
-//      // HSQL DB called "testdb".
-//      Properties props = DBUtils.getHSQLDBInMemoryDBConnection("testdb");
-//
-//      // Start up our database
-//      DBUtils db = new DBUtils(props);
       mNucleus = NucleusTestUtils.startNucleusWithModules(new String[] { "DAF.Deployment", "DPS" }, this.getClass(), "");
       
       assertNotNull(mNucleus);
@@ -76,6 +69,13 @@ public class NucleusEntityManagerIT {
     SimpleItem item = mEntityManager.find(SimpleItem.class, "simpleItem1");
     
     assertThat("The fetched item is null", item, notNullValue());
+    assertThat("The id is incorrect", item.getId(), equalTo("simpleItem1"));
     assertThat("The stringProperty value is incorrect", item.getStringProperty(), equalTo("Hello World!"));
+  }
+  
+  @Test
+  public void testPersist() {
+    SimpleItem item = new SimpleItem();
+    item.setStringProperty("A random value");
   }
 }

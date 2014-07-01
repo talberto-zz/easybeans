@@ -2,7 +2,6 @@ package org.easybeans.atg;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.isEmpty;
 
 import java.beans.BeanInfo;
@@ -10,6 +9,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +26,9 @@ import atg.repository.RepositoryItem;
 import atg.repository.RepositoryItemDescriptor;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 /**
@@ -58,6 +60,27 @@ public class RepositoryBeanMapper<T> {
     }
   };
   
+  protected final static Predicate<PropertyDescriptor> sRepositoryIdAnnotated = new Predicate<PropertyDescriptor>() {
+
+    @Override
+    public boolean apply(PropertyDescriptor pDescriptor) {
+      Method reader = pDescriptor.getReadMethod();
+      Method writer = pDescriptor.getWriteMethod();
+      
+      if(reader == null & writer == null) {
+        return false;
+      }
+      
+      if(reader != null && reader.getAnnotation(RepositoryId.class) != null) {
+        return true;
+      } else if(writer != null && writer.getAnnotation(RepositoryId.class) != null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+  
   protected Logger mLog = LoggerFactory.getLogger(this.getClass());
   /** Class of the mapped bean */
   protected Class<T> mType;
@@ -71,6 +94,8 @@ public class RepositoryBeanMapper<T> {
   protected ObjectInstantiator mInstantiator;
   /** Reference to the {@link NucleusEntityManager} */
   protected NucleusEntityManager mEntityManager;
+  protected Nucleus mNucleus;
+  protected PropertyDescriptor mIdDescriptor;
   
   public static <T> RepositoryBeanMapper<T> from(NucleusEntityManager pEntityManager, Class<T> pType) {
     sLog.trace("Entering from({})", pType);
@@ -86,7 +111,7 @@ public class RepositoryBeanMapper<T> {
     RepositoryBean repositoryBeanAnnotation = mType.getAnnotation(RepositoryBean.class);
     checkArgument(repositoryBeanAnnotation != null, "the type %s isn't annotated with @RepositoryBean", mType.getName());
     String repositoryPath = repositoryBeanAnnotation.repository();
-    mRepository = (MutableRepository) Nucleus.getGlobalNucleus().resolveName(repositoryPath);
+    mRepository = (MutableRepository) getNucleus().resolveName(repositoryPath);
     checkNotNull(mRepository, "Repository %s doesn't exist", repositoryPath);
     String descriptorName = repositoryBeanAnnotation.descriptorName();
     try {
@@ -104,18 +129,34 @@ public class RepositoryBeanMapper<T> {
       throw new MappingException(String.format("Error extracting BeanInfo from %s", pType), e);
     }
     List<PropertyDescriptor> descriptors = ImmutableList.copyOf(beanInfo.getPropertyDescriptors());
-    // Remove descriptors that doesn't have any annotations neither on getter nor in setter    
-    Iterable<PropertyDescriptor> filteredDescriptors = filter(descriptors, sNotRepositoryPropertyAnnotated);
     
-    if(isEmpty(filteredDescriptors)) {
+    // Try to find the id property
+    Collection<PropertyDescriptor> idDescriptors = Collections2.filter(descriptors, sRepositoryIdAnnotated);
+    if(idDescriptors.isEmpty()) {
+      throw new IllegalArgumentException(String.format("The type [%s] doesn't have any @RepositoryId annotated property", mType)); 
+    } else if(idDescriptors.size() > 1) {
+      throw new IllegalArgumentException(String.format("The type [%s] has more than one @RepositoryId annotated property", mType));
+    }
+    
+    // Remove descriptors that doesn't have any annotations neither on getter nor in setter    
+    Collection<PropertyDescriptor> repositoryPropertyDescriptors = Collections2.filter(descriptors, sNotRepositoryPropertyAnnotated);
+    
+    if(repositoryPropertyDescriptors.isEmpty()) {
       mLog.warn("The type [{}] doesn't have any @RepositoryProperty annotated property", mType);
     }
     
-    for(PropertyDescriptor property : filteredDescriptors) {
+    for(PropertyDescriptor property : repositoryPropertyDescriptors) {
       RepositoryPropertyMapper propertyMapper = RepositoryPropertyMapper.from(property);
       mRepositoryDescForBeanPropertyName.put(property.getName(), propertyMapper);
       mRepositoryDescForRepositoryPropertyName.put(propertyMapper.getRepositoryPropertyName(), propertyMapper);
     }
+  }
+
+  protected Nucleus getNucleus() {
+    if(mNucleus == null) {
+      mNucleus = Nucleus.getGlobalNucleus();
+    }
+    return mNucleus;
   }
   
   public T find(Object pPk) {

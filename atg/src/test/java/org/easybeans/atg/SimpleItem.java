@@ -6,7 +6,23 @@ package org.easybeans.atg;
 public class SimpleItem {
 
   private String mStringProperty;
+  private String mId; 
+  
+  /**
+   * @return the id
+   */
+  @RepositoryId
+  public String getId() {
+    return mId;
+  }
 
+  /**
+   * @param pId the id to set
+   */
+  public void setId(String pId) {
+    mId = pId;
+  }
+  
   /**
    * @return the stringProperty
    */

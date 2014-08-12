@@ -67,6 +67,7 @@ public class NucleusEntityManagerIT {
     }
   }
 
+  @Ignore
   @Test
   public void testFind() {
     SimpleItem item = mEntityManager.find(SimpleItem.class, "simpleItem1");
@@ -86,7 +87,19 @@ public class NucleusEntityManagerIT {
     RepositoryItem item = mSimpleRepository.getItem(id, "simpleItem");
     assertNotNull("The repository item retrieved is null", item);
     assertThat("The repository id isn't correct", item.getRepositoryId(), equalTo(id));
-    assertThat("The bean id isn't correct", simpleItem.getId(), equalTo(simpleItem.getId()));
+    assertThat("The bean id isn't correct", simpleItem.getId(), equalTo(id));
     assertThat("The property stringProperty isn't correct", (String) item.getPropertyValue("stringProperty"), equalTo("A random value"));
+  }
+  
+  
+  @Test
+  public void testUpdate() throws RepositoryException {
+    SimpleItem simpleItem = new SimpleItem();
+    simpleItem.setId("simpleItem1");
+    simpleItem.setStringProperty("Updated value");
+    
+    mEntityManager.update(simpleItem);
+    RepositoryItem item = mSimpleRepository.getItem(simpleItem.getId(), "simpleItem");
+    assertThat("The property stringProperty isn't correct", (String) item.getPropertyValue("stringProperty"), equalTo("Updated value"));
   }
 }

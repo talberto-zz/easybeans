@@ -45,4 +45,12 @@ public class NucleusEntityManager implements EntityManager {
     Class<T> type = (Class<T>) pItem.getClass();
     return findMapperFor(type).create(pItem);
   }
+
+  @Override
+  public <T> void update(T pItem) {
+    mLog.trace("Entering update");
+    @SuppressWarnings("unchecked")
+    Class<T> type = (Class<T>) pItem.getClass();
+    findMapperFor(type).update(pItem);
+  }
 }

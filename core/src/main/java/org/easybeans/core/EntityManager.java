@@ -1,6 +1,7 @@
 package org.easybeans.core;
 
 
+
 /**
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
@@ -24,4 +25,6 @@ public interface EntityManager {
    * @return
    */
   public <T> String create(T pItem);
+
+  public <T> void update(T pSimpleItem);
 }

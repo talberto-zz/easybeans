@@ -135,6 +135,8 @@ public class RepositoryBeanMapper<T> {
       throw new IllegalArgumentException(String.format("The type [%s] doesn't have any @RepositoryId annotated property", mType)); 
     } else if(idDescriptors.size() > 1) {
       throw new IllegalArgumentException(String.format("The type [%s] has more than one @RepositoryId annotated property", mType));
+    } else {
+      mIdDescriptor = idDescriptors.iterator().next();
     }
     
     // Remove descriptors that doesn't have any annotations neither on getter nor in setter    
@@ -262,11 +264,75 @@ public class RepositoryBeanMapper<T> {
       throw new MappingException(String.format("Error inserting new RepositoryItem [%s]", repositoryItem), e);
     }
     
+    // Set the id of the bean
+    setBeanId(pItem, finalRepositoryItem.getRepositoryId());
+    
     return finalRepositoryItem.getRepositoryId();
+  }
+  
+  protected void setBeanId(T pBean, String pId) {
+    try {
+      mIdDescriptor.getWriteMethod().invoke(pBean, pId);
+    } catch (Exception e) {
+      throw new MappingException(String.format("Error setting bean id [%s] of bean [%s]", pId, pBean), e);
+    }
+  }
+
+  protected String getBeanId(T pBean) {
+    try {
+      return (String) mIdDescriptor.getReadMethod().invoke(pBean);
+    } catch (Exception e) {
+      throw new MappingException(String.format("Error getting bean id of bean [%s]", pBean), e);
+    }
   }
   
   public RepositoryItem toRepositoryItem(MutableRepositoryItem pItem, T pBean) {
     return null;
+  }
+  
+  public void update(T pBean) {
+    mLog.trace("Entering update({})", pBean);
+    String repositoryId = getBeanId(pBean);
+    MutableRepositoryItem repositoryItem;
+    try {
+      repositoryItem = mRepository.getItemForUpdate(repositoryId, mItemDescriptor.getItemDescriptorName());
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Exception updating RepositoryItem from bean [%s]", pBean), e);
+    }
+    
+    mLog.debug("Got RepositoryItem for update[{}]", repositoryItem);
+    
+    mLog.debug("Extracting all properties from the Bean [{}]", pBean);
+    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
+      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
+      String beanPropertyName = propertyMapper.getBeanPropertyName();
+      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
+      DynamicPropertyDescriptor propertyDescriptor;
+      try {
+        propertyDescriptor = repositoryItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
+      } catch (RepositoryException e) {
+        throw new IllegalArgumentException(e);
+      }
+      
+      if(propertyDescriptor == null) {
+        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pBean));
+      }
+      
+      Object beanPropertyValue = propertyMapper.getBeanProperty(pBean, beanPropertyName);
+      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
+        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");
+        mEntityManager.update(beanPropertyValue);
+      } else {
+        repositoryItem.setPropertyValue(repositoryPropertyName, beanPropertyValue);
+      }
+    }
+    
+    // Update the repository with the item
+    try {
+      mRepository.updateItem(repositoryItem);
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Error inserting new RepositoryItem [%s]", repositoryItem), e);
+    }
   }
   
   /**

@@ -20,6 +20,7 @@ public class NucleusEntityManager implements EntityManager {
   
   @Override
   public <T> T find(Class<T> pType, Object pPk) {
+    mLog.trace("Entering find");
     return findMapperFor(pType).find(pPk);
   }
 
@@ -35,5 +36,13 @@ public class NucleusEntityManager implements EntityManager {
       mMapperForType.put(pType, mapper);
     }
     return mapper;
+  }
+  
+  @Override
+  public <T> String create(T pItem) {
+    mLog.trace("Entering create");
+    @SuppressWarnings("unchecked")
+    Class<T> type = (Class<T>) pItem.getClass();
+    return findMapperFor(type).create(pItem);
   }
 }

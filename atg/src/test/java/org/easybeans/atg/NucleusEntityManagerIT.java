@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import org.easybeans.core.EntityManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ import atg.nucleus.Nucleus;
 import atg.nucleus.NucleusTestUtils;
 import atg.nucleus.ServiceException;
 import atg.repository.Repository;
+import atg.repository.RepositoryException;
+import atg.repository.RepositoryItem;
 
 /**
  * 
@@ -74,8 +77,16 @@ public class NucleusEntityManagerIT {
   }
   
   @Test
-  public void testPersist() {
-    SimpleItem item = new SimpleItem();
-    item.setStringProperty("A random value");
+  public void testCreate() throws RepositoryException {
+    SimpleItem simpleItem = new SimpleItem();
+    simpleItem.setStringProperty("A random value");
+    
+    String id = mEntityManager.create(simpleItem);
+    
+    RepositoryItem item = mSimpleRepository.getItem(id, "simpleItem");
+    assertNotNull("The repository item retrieved is null", item);
+    assertThat("The repository id isn't correct", item.getRepositoryId(), equalTo(id));
+    assertThat("The bean id isn't correct", simpleItem.getId(), equalTo(simpleItem.getId()));
+    assertThat("The property stringProperty isn't correct", (String) item.getPropertyValue("stringProperty"), equalTo("A random value"));
   }
 }

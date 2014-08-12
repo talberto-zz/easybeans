@@ -2,7 +2,6 @@ package org.easybeans.atg;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.isEmpty;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import atg.beans.DynamicPropertyDescriptor;
 import atg.nucleus.Nucleus;
 import atg.repository.MutableRepository;
+import atg.repository.MutableRepositoryItem;
 import atg.repository.RepositoryException;
 import atg.repository.RepositoryItem;
 import atg.repository.RepositoryItemDescriptor;
@@ -28,7 +28,6 @@ import atg.repository.RepositoryItemDescriptor;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 /**
@@ -190,7 +189,7 @@ public class RepositoryBeanMapper<T> {
       try {
         propertyDescriptor = pItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
       } catch (RepositoryException e) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(e);
       }
       
       if(propertyDescriptor == null) {
@@ -212,8 +211,62 @@ public class RepositoryBeanMapper<T> {
     return bean;
   }
   
-  public void toRepositoryItem(RepositoryItem pItem, T pBean) {
+  public String create(T pItem) {
+    mLog.trace("Entering create({})", pItem);
+    MutableRepositoryItem repositoryItem;
+    try {
+      repositoryItem = mRepository.createItem(mItemDescriptor.getItemDescriptorName());
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Exception creating RepositoryItem from bean [%s]", pItem), e);
+    }
     
+    mLog.debug("Created new RepositoryItem [{}]", repositoryItem);
+    
+    mLog.debug("Extracting all properties from the Bean [{}]", pItem);
+    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
+      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
+      String beanPropertyName = propertyMapper.getBeanPropertyName();
+      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
+      DynamicPropertyDescriptor propertyDescriptor;
+      try {
+        propertyDescriptor = repositoryItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
+      } catch (RepositoryException e) {
+        throw new IllegalArgumentException(e);
+      }
+      
+      if(propertyDescriptor == null) {
+        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pItem));
+      }
+      
+      Object beanPropertyValue = propertyMapper.getBeanProperty(pItem, beanPropertyName);
+      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
+        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");
+        String nestedRepositoryItemId = mEntityManager.create(beanPropertyValue);
+        // Assume the nested repository item belongs to the same repository
+        try {
+          RepositoryItem nestedRepositoryItem = mRepository.getItem(nestedRepositoryItemId, repositoryPropertyName);
+          repositoryItem.setPropertyValue(repositoryPropertyName, nestedRepositoryItem);
+        } catch (RepositoryException e) {
+          throw new MappingException(String.format("Error mapping bean property [%s] to repository property [%s]", beanPropertyName, repositoryPropertyName), e);
+        }
+      } else {
+        repositoryItem.setPropertyValue(repositoryPropertyName, beanPropertyValue);
+      }
+    }
+    
+    // Update the repository with the newly created item
+    RepositoryItem finalRepositoryItem;
+    try {
+      finalRepositoryItem = mRepository.addItem(repositoryItem);
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Error inserting new RepositoryItem [%s]", repositoryItem), e);
+    }
+    
+    return finalRepositoryItem.getRepositoryId();
+  }
+  
+  public RepositoryItem toRepositoryItem(MutableRepositoryItem pItem, T pBean) {
+    return null;
   }
   
   /**

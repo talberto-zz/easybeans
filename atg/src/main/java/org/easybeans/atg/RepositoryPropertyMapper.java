@@ -76,6 +76,14 @@ public class RepositoryPropertyMapper {
     }
   }
   
+  public Object getBeanProperty(Object pBean, String pPropertyName) {
+    try {
+      return mReader.invoke(pBean);
+    } catch(Exception e) {
+      throw new MappingException(e);
+    }
+  }
+  
   public Class<?> getPropertyBeanType() {
     return mProperty.getPropertyType();
   }

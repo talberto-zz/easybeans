@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <name>EasyBeans ATG</name>
-  <description>EasyBeans ATG</description>
+  <name>EasyBeans API</name>
+  <description>EasyBeans API</description>
   <inceptionYear>2014</inceptionYear>
   <parent>
     <groupId>com.github.talberto.easybeans</groupId>
     <artifactId>easybeans-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>easybeans-atg</artifactId>
+  <artifactId>easybeans-api</artifactId>
   <packaging>jar</packaging>
 
   <developers>
@@ -23,7 +23,7 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-
+  
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -31,73 +31,20 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
+  
   <scm>
     <connection>scm:git:https://github.com/talberto/easybeans.git</connection>
     <developerConnection>scm:git:https://github.com/talberto/easybeans.git</developerConnection>
     <url>scm:git:https://github.com/talberto/easybeans.git</url>
   </scm>
-
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
     <maven.compiler.target>1.6</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
   </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <argLine>-Duser.language=en -Duser.locale=US</argLine>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
-    <dependency>
-      <groupId>com.github.talberto.easybeans</groupId>
-      <artifactId>easybeans-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.talberto.easybeans</groupId>
-      <artifactId>easybeans-gen</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.objenesis</groupId>
-      <artifactId>objenesis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <!-- ATG dependencies -->
-    <dependency>
-      <groupId>atg.platform</groupId>
-      <artifactId>DAS</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>atg.platform</groupId>
-      <artifactId>DAS</artifactId>
-      <classifier>resources</classifier>
-    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -130,11 +77,6 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.atgdust</groupId>
-      <artifactId>atgdust</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

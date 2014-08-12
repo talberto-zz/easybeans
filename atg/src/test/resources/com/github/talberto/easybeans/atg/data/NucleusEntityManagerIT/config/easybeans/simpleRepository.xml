@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE gsa-template 
+  PUBLIC '-//Art Technology Group, Inc.//DTD General SQL Adapter//EN'
+  'http://www.atg.com/dtds/gsa/gsa_1.0.dtd'>
+
+<gsa-template>
+  <header>
+    <name>Simple Repository</name>
+    <author>Tomas Rodriguez</author>
+  </header>
+  
+  <item-descriptor name="simpleItem">
+    <table name="simpleItem" id-column-name="id" type="primary">
+      <property name="stringProperty" data-type="string" />
+    </table>
+  </item-descriptor>
+</gsa-template>

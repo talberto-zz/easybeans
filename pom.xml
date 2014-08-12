@@ -4,13 +4,14 @@
   <name>EasyBeans Parent</name>
   <description>EasyBeans Parent</description>
   <inceptionYear>2014</inceptionYear>
-  <groupId>org.easybeans</groupId>
+  <groupId>com.github.talberto.easybeans</groupId>
   <artifactId>easybeans-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>core</module>
+    <module>api</module>
+    <module>gen</module>
     <module>atg</module>
   </modules>
 

@@ -338,6 +338,37 @@ public class RepositoryBeanMapper<T> {
     }
   }
   
+  public void delete(T pBean) {
+    mLog.trace("Entering update({})", pBean);
+    String repositoryId = getBeanId(pBean);
+
+    mLog.debug("Removing nested properties of the Bean [{}]", pBean);
+    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
+      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
+      String beanPropertyName = propertyMapper.getBeanPropertyName();
+      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
+      DynamicPropertyDescriptor propertyDescriptor;
+      propertyDescriptor = mItemDescriptor.getPropertyDescriptor(repositoryPropertyName);
+      
+      if(propertyDescriptor == null) {
+        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pBean));
+      }
+      
+      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
+        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to delete this property");
+        Object beanPropertyValue = propertyMapper.getBeanProperty(pBean, beanPropertyName);
+        mEntityManager.delete(beanPropertyValue);
+      }
+    }
+    
+    mLog.debug("Deleting RepositoryItem [{}] of type [{}]", repositoryId, this.mItemDescriptor.getItemDescriptorName());
+    try {
+      mRepository.removeItem(repositoryId, this.mItemDescriptor.getItemDescriptorName());
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Error removing item [%s] of type [%s] from Repository [%s]", repositoryId, this.mItemDescriptor.getItemDescriptorName(), mRepository), e);
+    }
+  }
+  
   /**
    * @return the type
    */

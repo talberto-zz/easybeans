@@ -46,15 +46,15 @@ public class NucleusEntityManager extends GenericService implements EntityManage
   }
   
   @Override
-  public <T> String create(T pItem) {
+  public <T> String create(T pBean) {
     mLog.trace("Entering create");
     TransactionDemarcation td = new TransactionDemarcation();
     boolean rollback = true;
     try {
       td.begin(mTransactionManager, TransactionDemarcation.REQUIRED);
       @SuppressWarnings("unchecked")
-      Class<T> type = (Class<T>) pItem.getClass();
-      String id = findMapperFor(type).create(pItem);
+      Class<T> type = (Class<T>) pBean.getClass();
+      String id = findMapperFor(type).create(pBean);
       rollback = false;
       return id;
     } catch (TransactionDemarcationException e) {
@@ -69,15 +69,15 @@ public class NucleusEntityManager extends GenericService implements EntityManage
   }
 
   @Override
-  public <T> void update(T pItem) {
+  public <T> void update(T pBean) {
     mLog.trace("Entering update");
     TransactionDemarcation td = new TransactionDemarcation();
     boolean rollback = true;
     try {
       td.begin(mTransactionManager, TransactionDemarcation.REQUIRED);
       @SuppressWarnings("unchecked")
-      Class<T> type = (Class<T>) pItem.getClass();
-      findMapperFor(type).update(pItem);
+      Class<T> type = (Class<T>) pBean.getClass();
+      findMapperFor(type).update(pBean);
       rollback = false;
     } catch (TransactionDemarcationException e) {
       throw new MappingException(e);
@@ -102,5 +102,27 @@ public class NucleusEntityManager extends GenericService implements EntityManage
    */
   public void setTransactionManager(TransactionManager pTransactionManager) {
     mTransactionManager = pTransactionManager;
+  }
+
+  @Override
+  public <T> void delete(T pBean) {
+    mLog.trace("Entering delete");
+    TransactionDemarcation td = new TransactionDemarcation();
+    boolean rollback = true;
+    try {
+      td.begin(mTransactionManager, TransactionDemarcation.REQUIRED);
+      @SuppressWarnings("unchecked")
+      Class<T> type = (Class<T>) pBean.getClass();
+      findMapperFor(type).delete(pBean);
+      rollback = false;
+    } catch (TransactionDemarcationException e) {
+      throw new MappingException(e);
+    } finally {
+      try {
+        td.end(rollback);
+      } catch (TransactionDemarcationException e) {
+        throw new MappingException(e);
+      }
+    }
   }
 }

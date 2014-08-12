@@ -2,6 +2,7 @@ package org.easybeans.atg;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -13,6 +14,7 @@ import javax.servlet.ServletException;
 import org.easybeans.core.EntityManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,7 @@ public class NucleusEntityManagerIT {
     assertThat("The id is incorrect", item.getId(), equalTo("simpleItem1"));
     assertThat("The stringProperty value is incorrect", item.getStringProperty(), equalTo("Hello World!"));
   }
-  
+
   @Test
   public void testCreate() throws RepositoryException {
     SimpleItem simpleItem = new SimpleItem();
@@ -88,8 +90,7 @@ public class NucleusEntityManagerIT {
     assertThat("The bean id isn't correct", simpleItem.getId(), equalTo(id));
     assertThat("The property stringProperty isn't correct", (String) item.getPropertyValue("stringProperty"), equalTo("A random value"));
   }
-  
-  
+
   @Test
   public void testUpdate() throws RepositoryException {
     SimpleItem simpleItem = new SimpleItem();
@@ -99,5 +100,15 @@ public class NucleusEntityManagerIT {
     mEntityManager.update(simpleItem);
     RepositoryItem item = mSimpleRepository.getItem(simpleItem.getId(), "simpleItem");
     assertThat("The property stringProperty isn't correct", (String) item.getPropertyValue("stringProperty"), equalTo("Updated value"));
+  }
+  
+  @Test
+  public void testDelete() throws RepositoryException {
+    SimpleItem simpleItem = new SimpleItem();
+    simpleItem.setId("simpleItem1");
+    
+    mEntityManager.delete(simpleItem);
+    RepositoryItem item = mSimpleRepository.getItem(simpleItem.getId(), "simpleItem");
+    assertThat("RepositoryItem must be null", item, nullValue());
   }
 }

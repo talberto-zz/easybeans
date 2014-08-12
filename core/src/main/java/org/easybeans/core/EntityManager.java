@@ -2,6 +2,7 @@ package org.easybeans.core;
 
 
 
+
 /**
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
@@ -10,7 +11,7 @@ package org.easybeans.core;
 public interface EntityManager {
 
   /**
-   * Finds and retrieves a repository item
+   * Finds and retrieves a bean of type pType with primary key pPk
    * 
    * @param pType class of the repository item to find
    * @param pPk primary key
@@ -22,9 +23,21 @@ public interface EntityManager {
    * Creates a new repository item
    * 
    * @param pItem the bean representing the repository item to be created
-   * @return
+   * @return the id of the newly created item
    */
-  public <T> String create(T pItem);
+  public <T> String create(T pBean);
 
-  public <T> void update(T pSimpleItem);
+  /**
+   * Updates the corresponding RepositoryItem's from a given bean. The bean's @RepositoryId property must be non null.
+   *  
+   * @param pItem
+   */
+  public <T> void update(T pBean);
+
+  /**
+   * Deletes the RepositoryItem's that corresponds to a given bean. The bean's @RepositoryId property must be non null.
+   * 
+   * @param pItem
+   */
+  public <T> void delete(T pBean);
 }

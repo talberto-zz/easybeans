@@ -210,6 +210,9 @@ public class RepositoryBeanMapper<T> {
       propertyMapper.setBeanProperty(bean, repositoryPropertyValue);
     }
     
+    // Set the bean id
+    setBeanId(bean, pItem.getRepositoryId());
+    
     return bean;
   }
   

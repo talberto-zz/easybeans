@@ -66,12 +66,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.talberto.easybeans</groupId>
+      <groupId>com.github.talberto</groupId>
       <artifactId>easybeans-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.talberto.easybeans</groupId>
+      <groupId>com.github.talberto</groupId>
       <artifactId>easybeans-gen</artifactId>
       <version>${project.version}</version>
     </dependency>

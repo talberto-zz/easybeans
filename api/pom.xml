@@ -5,7 +5,7 @@
   <description>EasyBeans API</description>
   <inceptionYear>2014</inceptionYear>
   <parent>
-    <groupId>com.github.talberto.easybeans</groupId>
+    <groupId>com.github.talberto</groupId>
     <artifactId>easybeans-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>

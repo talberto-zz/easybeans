@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <name>EasyBeans ATG</name>
   <description>EasyBeans ATG</description>
+  <url>https://github.com/talberto/easybeans</url>
   <inceptionYear>2014</inceptionYear>
   <parent>
     <groupId>com.github.talberto</groupId>

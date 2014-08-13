@@ -1,7 +1,6 @@
-Easybeans Project
-=========
+# Easybeans Project
 
-# Motivation
+## Motivation
 
 Does this seem similar to you?
 

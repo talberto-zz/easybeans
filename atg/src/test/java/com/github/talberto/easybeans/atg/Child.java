@@ -21,13 +21,17 @@ import com.github.talberto.easybeans.api.RepositoryId;
 import com.github.talberto.easybeans.api.RepositoryProperty;
 
 @RepositoryBean(
-    repository = "/easybeans/SimpleRepository",
-    descriptorName = "simpleItem")
-public class SimpleItem {
+    repository = "/easybeans/UserRepository",
+    descriptorName = "child")
+public class Child {
 
-  private String mStringProperty;
-  private String mId; 
+  private String mId;
+  private String mName;
+  private Integer mAge;
   
+  public Child() {
+  }
+
   /**
    * @return the id
    */
@@ -44,17 +48,32 @@ public class SimpleItem {
   }
   
   /**
-   * @return the stringProperty
+   * @return the name
    */
-  @RepositoryProperty(propertyName = "stringProperty")
-  public String getStringProperty() {
-    return mStringProperty;
+  @RepositoryProperty(propertyName="name")
+  public String getName() {
+    return mName;
   }
 
   /**
-   * @param pStringProperty the stringProperty to set
+   * @param pName the name to set
    */
-  public void setStringProperty(String pStringProperty) {
-    mStringProperty = pStringProperty;
+  public void setName(String pName) {
+    mName = pName;
+  }
+
+  /**
+   * @return the age
+   */
+  @RepositoryProperty(propertyName="age")
+  public Integer getAge() {
+    return mAge;
+  }
+
+  /**
+   * @param pAge the age to set
+   */
+  public void setAge(Integer pAge) {
+    mAge = pAge;
   }
 }

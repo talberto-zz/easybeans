@@ -33,7 +33,6 @@ import org.objenesis.instantiator.basic.AccessibleInstantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import atg.beans.DynamicPropertyDescriptor;
 import atg.nucleus.Nucleus;
 import atg.repository.MutableRepository;
 import atg.repository.MutableRepositoryItem;
@@ -51,14 +50,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 /**
- * Maps a RepositoryBean to a RepositoryItem and the other way around
+ * Maps a Bean to a RepositoryItem and the other way around
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
  */
-public class RepositoryBeanMapper<T> {
+public class BeanMapper<T> {
 
-  protected final static Logger sLog = LoggerFactory.getLogger(RepositoryBeanMapper.class);
+  protected final static Logger sLog = LoggerFactory.getLogger(BeanMapper.class);
   protected final static Predicate<PropertyDescriptor> sNotRepositoryPropertyAnnotated = new Predicate<PropertyDescriptor>() {
     @Override
     public boolean apply(PropertyDescriptor pPropertyDesc) {
@@ -107,8 +106,8 @@ public class RepositoryBeanMapper<T> {
   protected MutableRepository mRepository;
   /** Repository item descriptor */
   protected RepositoryItemDescriptor mItemDescriptor;
-  protected Map<String, RepositoryPropertyMapper> mRepositoryDescForBeanPropertyName = Maps.newHashMap();
-  protected Map<String, RepositoryPropertyMapper> mRepositoryDescForRepositoryPropertyName = Maps.newHashMap();
+  protected Map<String, PropertyMapper> mPropMapperForBeanPropertyName = Maps.newHashMap();
+  protected Map<String, PropertyMapper> mPropMapperForRepositoryPropertyName = Maps.newHashMap();
   /** Instantiator for the class <code>T</code> */
   protected ObjectInstantiator mInstantiator;
   /** Reference to the {@link NucleusEntityManager} */
@@ -116,12 +115,12 @@ public class RepositoryBeanMapper<T> {
   protected Nucleus mNucleus;
   protected PropertyDescriptor mIdDescriptor;
   
-  public static <T> RepositoryBeanMapper<T> from(NucleusEntityManager pEntityManager, Class<T> pType) {
+  public static <T> BeanMapper<T> create(NucleusEntityManager pEntityManager, Class<T> pType) {
     sLog.trace("Entering from({})", pType);
-    return new RepositoryBeanMapper<T>(pEntityManager, pType);
+    return new BeanMapper<T>(pEntityManager, pType);
   }
   
-  protected RepositoryBeanMapper(NucleusEntityManager pEntityManager, Class<T> pType) {
+  protected BeanMapper(NucleusEntityManager pEntityManager, Class<T> pType) {
     mLog.trace("RepositoryBeanMapper.<clinit>({}, {})", pEntityManager, pType);
     mEntityManager = pEntityManager;
     mType = pType;
@@ -160,16 +159,16 @@ public class RepositoryBeanMapper<T> {
     }
     
     // Remove descriptors that doesn't have any annotations neither on getter nor in setter    
-    Collection<PropertyDescriptor> repositoryPropertyDescriptors = Collections2.filter(descriptors, sNotRepositoryPropertyAnnotated);
+    Collection<PropertyDescriptor> validBeanPropertyDescriptors = Collections2.filter(descriptors, sNotRepositoryPropertyAnnotated);
     
-    if(repositoryPropertyDescriptors.isEmpty()) {
+    if(validBeanPropertyDescriptors.isEmpty()) {
       mLog.warn("The type [{}] doesn't have any @RepositoryProperty annotated property", mType);
     }
     
-    for(PropertyDescriptor property : repositoryPropertyDescriptors) {
-      RepositoryPropertyMapper propertyMapper = RepositoryPropertyMapper.from(property);
-      mRepositoryDescForBeanPropertyName.put(property.getName(), propertyMapper);
-      mRepositoryDescForRepositoryPropertyName.put(propertyMapper.getRepositoryPropertyName(), propertyMapper);
+    for(PropertyDescriptor property : validBeanPropertyDescriptors) {
+      PropertyMapper propertyMapper = PropertyMapper.create(mEntityManager, property, mItemDescriptor);
+      mPropMapperForBeanPropertyName.put(property.getName(), propertyMapper);
+      mPropMapperForRepositoryPropertyName.put(propertyMapper.getRepositoryPropertyName(), propertyMapper);
     }
   }
 
@@ -204,30 +203,11 @@ public class RepositoryBeanMapper<T> {
     T bean = (T) mInstantiator.newInstance();
     
     mLog.debug("Extracting all properties from the RepositoryItem [{}]", pItem);
-    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
-      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
-      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, propertyMapper.getBeanPropertyName());
-      DynamicPropertyDescriptor propertyDescriptor;
-      try {
-        propertyDescriptor = pItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
-      } catch (RepositoryException e) {
-        throw new IllegalArgumentException(e);
-      }
+    for(PropertyMapper propertyMapper : mPropMapperForBeanPropertyName.values()) {
+      mLog.debug("Property mapper [{}] will map the property", propertyMapper);
+      Object propertyValue = propertyMapper.mapRepositoryProperty(pItem);
       
-      if(propertyDescriptor == null) {
-        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pItem));
-      }
-      
-      Object repositoryPropertyValue;
-      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
-        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");
-        RepositoryItem nestedItem = (RepositoryItem) pItem.getPropertyValue(repositoryPropertyName);
-        repositoryPropertyValue = mEntityManager.find(propertyMapper.getPropertyBeanType(), nestedItem.getRepositoryId());
-      } else {
-        repositoryPropertyValue = pItem.getPropertyValue(repositoryPropertyName);
-      }
-      mLog.debug("The value of the property is [{}], setting it in the bean", repositoryPropertyValue);
-      propertyMapper.setBeanProperty(bean, repositoryPropertyValue);
+      propertyMapper.setBeanProperty(bean, propertyValue);
     }
     
     // Set the bean id
@@ -236,47 +216,20 @@ public class RepositoryBeanMapper<T> {
     return bean;
   }
   
-  public String create(T pItem) {
-    mLog.trace("Entering create({})", pItem);
+  public String create(T pBean) {
+    mLog.trace("Entering create({})", pBean);
     MutableRepositoryItem repositoryItem;
     try {
       repositoryItem = mRepository.createItem(mItemDescriptor.getItemDescriptorName());
     } catch (RepositoryException e) {
-      throw new MappingException(String.format("Exception creating RepositoryItem from bean [%s]", pItem), e);
+      throw new MappingException(String.format("Exception creating RepositoryItem from bean [%s]", pBean), e);
     }
     
     mLog.debug("Created new RepositoryItem [{}]", repositoryItem);
     
-    mLog.debug("Extracting all properties from the Bean [{}]", pItem);
-    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
-      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
-      String beanPropertyName = propertyMapper.getBeanPropertyName();
-      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
-      DynamicPropertyDescriptor propertyDescriptor;
-      try {
-        propertyDescriptor = repositoryItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
-      } catch (RepositoryException e) {
-        throw new IllegalArgumentException(e);
-      }
-      
-      if(propertyDescriptor == null) {
-        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pItem));
-      }
-      
-      Object beanPropertyValue = propertyMapper.getBeanProperty(pItem, beanPropertyName);
-      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
-        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");
-        String nestedRepositoryItemId = mEntityManager.create(beanPropertyValue);
-        // Assume the nested repository item belongs to the same repository
-        try {
-          RepositoryItem nestedRepositoryItem = mRepository.getItem(nestedRepositoryItemId, repositoryPropertyName);
-          repositoryItem.setPropertyValue(repositoryPropertyName, nestedRepositoryItem);
-        } catch (RepositoryException e) {
-          throw new MappingException(String.format("Error mapping bean property [%s] to repository property [%s]", beanPropertyName, repositoryPropertyName), e);
-        }
-      } else {
-        repositoryItem.setPropertyValue(repositoryPropertyName, beanPropertyValue);
-      }
+    mLog.debug("Extracting all properties from the Bean [{}]", pBean);
+    for(PropertyMapper propertyMapper : mPropMapperForBeanPropertyName.values()) {
+      propertyMapper.updateRepositoryItemProperty(repositoryItem, pBean);
     }
     
     // Update the repository with the newly created item
@@ -288,7 +241,7 @@ public class RepositoryBeanMapper<T> {
     }
     
     // Set the id of the bean
-    setBeanId(pItem, finalRepositoryItem.getRepositoryId());
+    setBeanId(pBean, finalRepositoryItem.getRepositoryId());
     
     return finalRepositoryItem.getRepositoryId();
   }
@@ -316,6 +269,7 @@ public class RepositoryBeanMapper<T> {
   public void update(T pBean) {
     mLog.trace("Entering update({})", pBean);
     String repositoryId = getBeanId(pBean);
+    checkNotNull(repositoryId, "The id of the bean [%s] is null", pBean);
     MutableRepositoryItem repositoryItem;
     try {
       repositoryItem = mRepository.getItemForUpdate(repositoryId, mItemDescriptor.getItemDescriptorName());
@@ -326,28 +280,8 @@ public class RepositoryBeanMapper<T> {
     mLog.debug("Got RepositoryItem for update[{}]", repositoryItem);
     
     mLog.debug("Extracting all properties from the Bean [{}]", pBean);
-    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
-      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
-      String beanPropertyName = propertyMapper.getBeanPropertyName();
-      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
-      DynamicPropertyDescriptor propertyDescriptor;
-      try {
-        propertyDescriptor = repositoryItem.getItemDescriptor().getPropertyDescriptor(repositoryPropertyName);
-      } catch (RepositoryException e) {
-        throw new IllegalArgumentException(e);
-      }
-      
-      if(propertyDescriptor == null) {
-        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pBean));
-      }
-      
-      Object beanPropertyValue = propertyMapper.getBeanProperty(pBean, beanPropertyName);
-      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
-        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to map this property");
-        mEntityManager.update(beanPropertyValue);
-      } else {
-        repositoryItem.setPropertyValue(repositoryPropertyName, beanPropertyValue);
-      }
+    for(PropertyMapper propertyMapper : mPropMapperForBeanPropertyName.values()) {
+      propertyMapper.updateRepositoryItemProperty(repositoryItem, pBean);
     }
     
     // Update the repository with the item
@@ -358,32 +292,19 @@ public class RepositoryBeanMapper<T> {
     }
   }
   
-  public void delete(T pBean) {
-    mLog.trace("Entering update({})", pBean);
+  public void delete(T pBean, boolean pDeleteNested) {
+    mLog.trace("Entering delete({})", pBean);
     String repositoryId = getBeanId(pBean);
-
-    mLog.debug("Removing nested properties of the Bean [{}]", pBean);
-    for(RepositoryPropertyMapper propertyMapper : mRepositoryDescForBeanPropertyName.values()) {
-      String repositoryPropertyName = propertyMapper.getRepositoryPropertyName();
-      String beanPropertyName = propertyMapper.getBeanPropertyName();
-      mLog.debug("Mapping repository property [{}] to bean property [{}]", repositoryPropertyName, beanPropertyName);
-      DynamicPropertyDescriptor propertyDescriptor;
-      propertyDescriptor = mItemDescriptor.getPropertyDescriptor(repositoryPropertyName);
-      
-      if(propertyDescriptor == null) {
-        throw new IllegalArgumentException(String.format("The property [%s] doesn't exist for the RepositoryItem [%s]", repositoryPropertyName, pBean));
-      }
-      
-      if(propertyDescriptor.getPropertyType() == RepositoryItem.class) {
-        mLog.debug("Repository property is of type RepositoryItem, asking NucleusEntityManager to delete this property");
-        Object beanPropertyValue = propertyMapper.getBeanProperty(pBean, beanPropertyName);
-        mEntityManager.delete(beanPropertyValue);
-      }
-    }
     
     mLog.debug("Deleting RepositoryItem [{}] of type [{}]", repositoryId, this.mItemDescriptor.getItemDescriptorName());
     try {
       mRepository.removeItem(repositoryId, this.mItemDescriptor.getItemDescriptorName());
+      
+      if(pDeleteNested) {
+        for(PropertyMapper propertyMapper : mPropMapperForBeanPropertyName.values()) {
+          propertyMapper.removeProperty(pBean);
+        }
+      }
     } catch (RepositoryException e) {
       throw new MappingException(String.format("Error removing item [%s] of type [%s] from Repository [%s]", repositoryId, this.mItemDescriptor.getItemDescriptorName(), mRepository), e);
     }
@@ -394,5 +315,17 @@ public class RepositoryBeanMapper<T> {
    */
   public Class<T> getType() {
     return mType;
+  }
+
+  protected RepositoryItem repositoryItemForBean(Object pBean) {
+    checkArgument(pBean.getClass().equals(mType), "The bean pBean is of type [%s] whereas this mapper is of type [%s]", pBean.getClass(), mType);
+    
+    @SuppressWarnings("unchecked")
+    T castedBean = (T) pBean;
+    try {
+      return mRepository.getItem(getBeanId(castedBean), mItemDescriptor.getItemDescriptorName());
+    } catch (RepositoryException e) {
+      throw new MappingException(String.format("Error getting a RepositoryItem for bean [%s]", castedBean), e);
+    }
   }
 }

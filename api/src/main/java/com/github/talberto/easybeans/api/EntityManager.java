@@ -54,4 +54,11 @@ public interface EntityManager {
    * @param pItem
    */
   public <T> void delete(T pBean);
+  
+  /**
+   * Deletes the RepositoryItem's that corresponds to a given bean. The bean's @RepositoryId property must be non null.
+   * 
+   * @param pItem
+   */
+  public <T> void delete(T pBean, boolean pDeleteNested);
 }

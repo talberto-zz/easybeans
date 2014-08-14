@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE gsa-template 
+  PUBLIC '-//Art Technology Group, Inc.//DTD General SQL Adapter//EN'
+  'http://www.atg.com/dtds/gsa/gsa_1.0.dtd'>
+
+<gsa-template>
+  <header>
+    <name>User Repository</name>
+    <author>Tomas Rodriguez</author>
+  </header>
+  
+  <item-descriptor name="user">
+    <table name="user" id-column-name="id" type="primary">
+      <property name="firstName" data-type="string" />
+      <property name="lastName" data-type="string" />
+      <property name="sex" data-type="string" />
+      <property name="birthDate" data-type="timestamp" />
+      <property name="lastModifiedDate" data-type="timestamp" />
+      <property name="premiumUser" data-type="boolean" />
+      <property name="points" data-type="int" />
+      <property name="rating" data-type="double" />
+      <property name="billingAddress" item-type="contactInfo" />
+    </table>
+    <table name="user_address" type="multi" id-column-name="user_id" multi-column-name="tag">
+      <property name="addresses" data-type="map" component-item-type="contactInfo" />
+    </table>
+    <table name="user_children" type="multi" id-column-name="user_id" multi-column-name="seq_num">
+      <property name="children" data-type="list" component-item-type="child"/>
+    </table>
+    <table name="user_numbers" type="multi" id-column-name="user_id" multi-column-name="seq_num">
+      <property name="favoriteNumbers" data-type="list" component-data-type="int"/>
+    </table>
+  </item-descriptor>
+  
+  <item-descriptor name="contactInfo">
+    <table name="contact_info" id-column-name="id" type="primary">
+      <property name="address1" data-type="string" />
+      <property name="address2" data-type="string" />
+      <property name="address3" data-type="string" />
+      <property name="telephoneNumber" data-type="string" />
+      <property name="postalCode" data-type="string" />
+      <property name="city" data-type="string" />
+      <property name="country" data-type="string" />
+    </table>
+  </item-descriptor>
+  
+  <item-descriptor name="child">
+    <table name="child" id-column-name="id" type="primary">
+      <property name="name" data-type="string" />
+      <property name="age" data-type="int" />
+    </table>
+  </item-descriptor>
+</gsa-template>

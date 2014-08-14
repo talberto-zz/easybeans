@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE gsa-template SYSTEM "dynamosystemresource:/atg/dtds/gsa/gsa_1.0.dtd">
+
+<gsa-template>
+  <import-items>
+    <add-item item-descriptor="child" id="child01">
+      <set-property name="name"><![CDATA[Javier]]></set-property>
+      <set-property name="age"><![CDATA[9]]></set-property>
+    </add-item>
+    
+    <add-item item-descriptor="child" id="child02">
+      <set-property name="name"><![CDATA[Juan]]></set-property>
+      <set-property name="age"><![CDATA[12]]></set-property>
+    </add-item>
+    
+    <add-item item-descriptor="contactInfo" id="billingAddress">
+      <set-property name="address1"><![CDATA[Avenida Andalucia 25]]></set-property>
+      <set-property name="city"><![CDATA[Malaga]]></set-property>
+      <set-property name="postalCode"><![CDATA[29006]]></set-property>
+      <set-property name="country"><![CDATA[Spain]]></set-property>
+      <set-property name="telephoneNumber"><![CDATA[952689656]]></set-property>
+    </add-item>
+    
+    <add-item item-descriptor="contactInfo" id="officeContact">
+      <set-property name="address1"><![CDATA[Avenida Diagonal 12]]></set-property>
+      <set-property name="city"><![CDATA[Barcelona]]></set-property>
+      <set-property name="postalCode"><![CDATA[08019]]></set-property>
+      <set-property name="country"><![CDATA[Spain]]></set-property>
+      <set-property name="telephoneNumber"><![CDATA[93694578]]></set-property>
+    </add-item>
+    
+    <add-item item-descriptor="user" id="user01">
+      <set-property name="firstName"><![CDATA[Tomas]]></set-property>
+      <set-property name="lastName"><![CDATA[Rodriguez]]></set-property>
+      <set-property name="sex"><![CDATA[M]]></set-property>
+      <set-property name="birthDate"><![CDATA[01/07/1980]]></set-property>
+      <set-property name="lastModifiedDate"><![CDATA[10/01/2014 15:33]]></set-property>
+      <set-property name="premiumUser"><![CDATA[true]]></set-property>
+      <set-property name="points"><![CDATA[53]]></set-property>
+      <set-property name="rating"><![CDATA[98.5]]></set-property>
+      <set-property name="billingAddress"><![CDATA[billingAddress]]></set-property>
+      <set-property name="children"><![CDATA[child01,child02]]></set-property>
+      <set-property name="favoriteNumbers"><![CDATA[1,3,7]]></set-property>
+      <set-property name="addresses"><![CDATA[officeAddress=officeContact]]></set-property>
+    </add-item>
+  </import-items>
+</gsa-template>

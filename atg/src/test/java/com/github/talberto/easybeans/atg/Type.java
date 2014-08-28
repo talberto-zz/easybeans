@@ -16,11 +16,9 @@
 
 package com.github.talberto.easybeans.atg;
 
-import com.github.talberto.easybeans.api.RepositoryEnum;
 import com.github.talberto.easybeans.api.RepositoryEnumCode;
 import com.github.talberto.easybeans.api.RepositoryEnumValue;
 
-@RepositoryEnum
 public enum Type {
   PREMIUM("premium", 0),
   STANDARD("standard", 1),

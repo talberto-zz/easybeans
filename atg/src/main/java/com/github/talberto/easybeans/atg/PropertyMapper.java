@@ -331,6 +331,10 @@ public abstract class PropertyMapper {
       Class<?> beanClass = pBeanPropertyDescriptor.getPropertyType();
       Class<?> beanComponentClass = null;
       
+      if(!pItemPropertyDescriptor.isWritable()) {
+        return new NoOpPropertySetter();
+      }
+      
       if(Collection.class.isAssignableFrom(beanClass)) {
         // User getter or setter to obtain the component's type
         if(pBeanPropertyDescriptor.getReadMethod() != null) {
@@ -394,6 +398,21 @@ public abstract class PropertyMapper {
     }
     
     public abstract Object processValue(Object pPropertyValue);
+  }
+  
+  static class NoOpPropertySetter extends PropertySetter {
+    public NoOpPropertySetter() {
+      super(null);
+    }
+
+    @Override
+    public void setItemProperty(MutableRepositoryItem pItem, String pPropertyName, Object pPropertyValue) {
+    }
+    
+    @Override
+    public Object processValue(Object pPropertyValue) {
+      return null;
+    }
   }
   
   static class SimplePropertySetter extends PropertySetter {
@@ -891,7 +910,7 @@ class EnumPropertyMapper extends PropertyMapper {
       }
       return mBeanPropertyDescriptor.getPropertyType().cast(enumItem);
     } catch (Exception e) {
-      throw new MappingException(String.format("Error extracting and converting [%s] enum", propertyValue));
+      throw new MappingException(String.format("Error extracting and converting [%s] enum", propertyValue), e);
     }
   }
 }

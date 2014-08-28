@@ -42,6 +42,7 @@ public class User {
   private List<Integer> mFavoriteNumbers;
   private Map<String, ContactInfo> mAddresses;
   private Type mType;
+  private String mDerivedFirstName;
   
   public User() {
   }
@@ -239,5 +240,20 @@ public class User {
    */
   public void setType(Type pType) {
     mType = pType;
+  }
+
+  /**
+   * @return the derivedFirstName
+   */
+  @RepositoryProperty(propertyName="derivedFirstName")
+  public String getDerivedFirstName() {
+    return mDerivedFirstName;
+  }
+
+  /**
+   * @param pDerivedFirstName the derivedFirstName to set
+   */
+  public void setDerivedFirstName(String pDerivedFirstName) {
+    mDerivedFirstName = pDerivedFirstName;
   }
 }

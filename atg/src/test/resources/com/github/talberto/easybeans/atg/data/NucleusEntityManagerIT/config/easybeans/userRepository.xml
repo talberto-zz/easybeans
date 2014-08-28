@@ -35,6 +35,11 @@
     <table name="user_numbers" type="multi" id-column-name="user_id" multi-column-name="seq_num">
       <property name="favoriteNumbers" data-type="list" component-data-type="int"/>
     </table>
+    <property name="derivedFirstName" data-type="string" writable="false">
+      <derivation>
+        <expression>firstName</expression>
+      </derivation>
+    </property>
   </item-descriptor>
   
   <item-descriptor name="contactInfo">

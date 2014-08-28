@@ -110,6 +110,7 @@ public class NucleusEntityManagerIT {
     assertThat("The lastModifiedDate is incorrect", new Date(user.getLastModifiedDate().getTime()), equalTo(dateTimeFormatter.parse("10/01/2014 15:33")));
     assertThat("The points is incorrect", user.getPoints(), equalTo(53));
     assertThat("The rating is incorrect", user.getRating(), equalTo(98.5));
+    assertThat("The derivedFirstName is incorrect", user.getDerivedFirstName(), equalTo("Tomas"));
     
     // Check billingAddress
     assertThat("The billingAddress is null", user.getBillingAddress(), notNullValue());
@@ -193,6 +194,7 @@ public class NucleusEntityManagerIT {
     assertThat("The property lastModifiedDate is incorrect", (Date) userItem.getPropertyValue("lastModifiedDate"), nullValue());
     assertThat("The property points is incorrect", (String) userItem.getPropertyValue("points"), nullValue());
     assertThat("The property rating is incorrect", (String) userItem.getPropertyValue("rating"), nullValue());
+    assertThat("The derivedFirstName is incorrect", (String) userItem.getPropertyValue("derivedFirstName"), equalTo("Jane"));
     assertThat("The user type isn't correct", (String) userItem.getPropertyValue("type"), equalTo(Type.STANDARD.value()));
     
     RepositoryItem billingAddressItem = (RepositoryItem) userItem.getPropertyValue("billingAddress");
@@ -273,6 +275,7 @@ public class NucleusEntityManagerIT {
     assertThat("The property lastModifiedDate is incorrect", (Date) userItem.getPropertyValue("lastModifiedDate"), nullValue());
     assertThat("The property points is incorrect", (String) userItem.getPropertyValue("points"), nullValue());
     assertThat("The property rating is incorrect", (String) userItem.getPropertyValue("rating"), nullValue());
+    assertThat("The property derivedFirstName is incorrect", (String) userItem.getPropertyValue("derivedFirstName"), equalTo("Jane"));
     assertThat("The property type is incorrect", (String) userItem.getPropertyValue("type"), equalTo(Type.STANDARD.value()));
     
     RepositoryItem billingAddressItem = (RepositoryItem) userItem.getPropertyValue("billingAddress");

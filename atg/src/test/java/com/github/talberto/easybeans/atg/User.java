@@ -35,13 +35,13 @@ public class User {
   private String mSex;
   private Date mBirthDate;
   private Date mLastModifiedDate;
-  private Boolean mPremiumUser;
   private Integer mPoints;
   private Double mRating;
   private ContactInfo mBillingAddress;
   private List<Child> mChildren;
   private List<Integer> mFavoriteNumbers;
   private Map<String, ContactInfo> mAddresses;
+  private Type mType;
   
   public User() {
   }
@@ -137,21 +137,6 @@ public class User {
   }
 
   /**
-   * @return the premiumUser
-   */
-  @RepositoryProperty(propertyName="premiumUser")
-  public Boolean getPremiumUser() {
-    return mPremiumUser;
-  }
-
-  /**
-   * @param pPremiumUser the premiumUser to set
-   */
-  public void setPremiumUser(Boolean pPremiumUser) {
-    mPremiumUser = pPremiumUser;
-  }
-
-  /**
    * @return the points
    */
   @RepositoryProperty(propertyName="points")
@@ -239,5 +224,20 @@ public class User {
    */
   public void setAddresses(Map<String, ContactInfo> pAddresses) {
     mAddresses = pAddresses;
+  }
+
+  /**
+   * @return the type
+   */
+  @RepositoryProperty(propertyName="type")
+  public Type getType() {
+    return mType;
+  }
+
+  /**
+   * @param pType the type to set
+   */
+  public void setType(Type pType) {
+    mType = pType;
   }
 }

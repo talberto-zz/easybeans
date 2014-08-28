@@ -16,10 +16,15 @@
       <property name="sex" data-type="string" />
       <property name="birthDate" data-type="timestamp" />
       <property name="lastModifiedDate" data-type="timestamp" />
-      <property name="premiumUser" data-type="boolean" />
       <property name="points" data-type="int" />
       <property name="rating" data-type="double" />
       <property name="billingAddress" item-type="contactInfo" />
+      <property name="type" data-type="enumerated">
+        <attribute name="useCodeForValue" value="false" />
+        <option value="premium" code="0" />
+        <option value="standard" code="1" />
+        <option value="professional" code="2" />
+      </property>
     </table>
     <table name="user_address" type="multi" id-column-name="user_id" multi-column-name="tag">
       <property name="addresses" data-type="map" component-item-type="contactInfo" />

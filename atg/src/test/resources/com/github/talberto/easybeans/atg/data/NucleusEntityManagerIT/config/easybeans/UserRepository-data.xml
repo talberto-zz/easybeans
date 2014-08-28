@@ -35,13 +35,13 @@
       <set-property name="sex"><![CDATA[M]]></set-property>
       <set-property name="birthDate"><![CDATA[01/07/1980]]></set-property>
       <set-property name="lastModifiedDate"><![CDATA[10/01/2014 15:33]]></set-property>
-      <set-property name="premiumUser"><![CDATA[true]]></set-property>
       <set-property name="points"><![CDATA[53]]></set-property>
       <set-property name="rating"><![CDATA[98.5]]></set-property>
       <set-property name="billingAddress"><![CDATA[billingAddress]]></set-property>
       <set-property name="children"><![CDATA[child01,child02]]></set-property>
       <set-property name="favoriteNumbers"><![CDATA[1,3,7]]></set-property>
       <set-property name="addresses"><![CDATA[officeAddress=officeContact]]></set-property>
+      <set-property name="type"><![CDATA[premium]]></set-property>
     </add-item>
   </import-items>
 </gsa-template>

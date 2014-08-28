@@ -36,7 +36,6 @@ import javax.servlet.ServletException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +96,6 @@ public class NucleusEntityManagerIT {
       }
     }
   }
-
   
   @Test
   public void testFind() throws ParseException {
@@ -110,7 +108,6 @@ public class NucleusEntityManagerIT {
     assertThat("The sex is incorrect", user.getSex(), equalTo("M"));
     assertThat("The birthDate is incorrect", new Date(user.getBirthDate().getTime()), equalTo(dateFormatter.parse("01/07/1980")));
     assertThat("The lastModifiedDate is incorrect", new Date(user.getLastModifiedDate().getTime()), equalTo(dateTimeFormatter.parse("10/01/2014 15:33")));
-    assertThat("The premiumUser is incorrect", user.getPremiumUser(), equalTo(true));
     assertThat("The points is incorrect", user.getPoints(), equalTo(53));
     assertThat("The rating is incorrect", user.getRating(), equalTo(98.5));
     
@@ -154,8 +151,10 @@ public class NucleusEntityManagerIT {
     assertThat("The office country is incorrect", officeAddress.getCountry(), equalTo("Spain")); 
     assertThat("The office postal code is incorrect", officeAddress.getPostalCode(), equalTo("08019")); 
     assertThat("The office telephone number is incorrect", officeAddress.getTelephoneNumber(), equalTo("93694578")); 
+    
+    // Check the type
+    assertThat("The user type isn't correct", user.getType(), equalTo(Type.PREMIUM));
   }
-
   
   @Test
   public void testCreate() throws RepositoryException, ParseException {
@@ -178,11 +177,11 @@ public class NucleusEntityManagerIT {
     user.setLastName("Fonda");
     user.setSex("F");
     user.setBirthDate(dateFormatter.parse("05/03/1945"));
-    user.setPremiumUser(false);
     user.setBillingAddress(billingAddress);
     user.setChildren(Lists.newArrayList(child));
     user.setFavoriteNumbers(Arrays.asList(2,4,6));
     user.setAddresses(Maps.newHashMap(ImmutableMap.of("officeAddress", officeContact)));
+    user.setType(Type.STANDARD);
     
     String userId = mEntityManager.create(user);
     RepositoryItem userItem = mUserRepository.getItem(userId, "user");
@@ -192,9 +191,9 @@ public class NucleusEntityManagerIT {
     assertThat("The property sex is incorrect", (String) userItem.getPropertyValue("sex"), equalTo("F"));
     assertThat("The property birthDate is incorrect", new Date(((Date) userItem.getPropertyValue("birthDate")).getTime()), equalTo(dateFormatter.parse("05/03/1945")));
     assertThat("The property lastModifiedDate is incorrect", (Date) userItem.getPropertyValue("lastModifiedDate"), nullValue());
-    assertThat("The property premiumUser is incorrect", (Boolean) userItem.getPropertyValue("premiumUser"), equalTo(false));
     assertThat("The property points is incorrect", (String) userItem.getPropertyValue("points"), nullValue());
     assertThat("The property rating is incorrect", (String) userItem.getPropertyValue("rating"), nullValue());
+    assertThat("The user type isn't correct", (String) userItem.getPropertyValue("type"), equalTo(Type.STANDARD.value()));
     
     RepositoryItem billingAddressItem = (RepositoryItem) userItem.getPropertyValue("billingAddress");
     assertThat("The property address1 is incorrect", (String) billingAddressItem.getPropertyValue("address1"), equalTo("35 Park avenue"));
@@ -258,11 +257,11 @@ public class NucleusEntityManagerIT {
     user.setLastName("Fonda");
     user.setSex("F");
     user.setBirthDate(dateFormatter.parse("05/03/1945"));
-    user.setPremiumUser(false);
     user.setBillingAddress(billingAddress);
     user.setChildren(Lists.newArrayList(child));
     user.setFavoriteNumbers(Arrays.asList(2,4,6));
     user.setAddresses(Maps.newHashMap(ImmutableMap.of("officeAddress", officeContact)));
+    user.setType(Type.STANDARD);
     
     mEntityManager.update(user);
     RepositoryItem userItem = mUserRepository.getItem("user01", "user");
@@ -272,9 +271,9 @@ public class NucleusEntityManagerIT {
     assertThat("The property sex is incorrect", (String) userItem.getPropertyValue("sex"), equalTo("F"));
     assertThat("The property birthDate is incorrect", new Date(((Date) userItem.getPropertyValue("birthDate")).getTime()), equalTo(dateFormatter.parse("05/03/1945")));
     assertThat("The property lastModifiedDate is incorrect", (Date) userItem.getPropertyValue("lastModifiedDate"), nullValue());
-    assertThat("The property premiumUser is incorrect", (Boolean) userItem.getPropertyValue("premiumUser"), equalTo(false));
     assertThat("The property points is incorrect", (String) userItem.getPropertyValue("points"), nullValue());
     assertThat("The property rating is incorrect", (String) userItem.getPropertyValue("rating"), nullValue());
+    assertThat("The property type is incorrect", (String) userItem.getPropertyValue("type"), equalTo(Type.STANDARD.value()));
     
     RepositoryItem billingAddressItem = (RepositoryItem) userItem.getPropertyValue("billingAddress");
     assertThat("The property address1 is incorrect", (String) billingAddressItem.getPropertyValue("address1"), equalTo("35 Park avenue"));

@@ -14,44 +14,37 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
-
-
+package com.github.talberto.easybeans.gen.decl;
 
 /**
- * Holds information about a bean's property
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
  */
-public class MetaProperty {
-  protected final String mName;
-  protected final MetaType mType;
+public class Assignment extends Sentence {
+  protected final Identifier mIdentifier;
+  protected final Expression mExpression;
   
-  public static MetaProperty create(String pName, Class<?> pType) {
-    return new MetaProperty(pName, pType);
-  }
-
-  public MetaProperty(String pName, MetaType pType) {
-    mName = pName;
-    mType = pType;
+  public static Sentence create(Identifier pRight, Expression pLeft) {
+    return new Assignment(pRight, pLeft);
   }
   
-  public MetaProperty(String pName, Class<?> pType) {
-    this(pName, MetaType.create(pType));
+  protected Assignment(Identifier pIdentifier, Expression pExpression) {
+    mIdentifier = pIdentifier;
+    mExpression = pExpression;
   }
 
   /**
-   * @return the name
+   * @return the identifier
    */
-  public String getName() {
-    return mName;
+  public Identifier getIdentifier() {
+    return mIdentifier;
   }
 
   /**
-   * @return the type
+   * @return the expression
    */
-  public MetaType getType() {
-    return mType;
+  public Expression getExpression() {
+    return mExpression;
   }
 }

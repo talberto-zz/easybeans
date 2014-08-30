@@ -14,37 +14,41 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
+package com.github.talberto.easybeans.gen.decl;
 
+import com.github.talberto.easybeans.gen.MetaType;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Holds information about a bean's property
+ * Holds information about an instance variable
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
  */
-public class MetaProperty {
-  protected final String mName;
+public class InstanceVarDecl {
+  protected final Identifier mName;
   protected final MetaType mType;
-  
-  public static MetaProperty create(String pName, Class<?> pType) {
-    return new MetaProperty(pName, pType);
-  }
 
-  public MetaProperty(String pName, MetaType pType) {
+  public static InstanceVarDecl create(Identifier pInstanceIdent, MetaType pType) {
+    return new InstanceVarDecl(pInstanceIdent, pType);
+  }
+  
+  public static InstanceVarDecl create(String pName, MetaType pType) {
+    return new InstanceVarDecl(Identifier.create(pName), pType);
+  }
+  
+  protected InstanceVarDecl(Identifier pName, MetaType pType) {
+    checkNotNull(pName, "The identifier cannot be null");
+    checkNotNull(pType, "The type cannot be null");
     mName = pName;
     mType = pType;
-  }
-  
-  public MetaProperty(String pName, Class<?> pType) {
-    this(pName, MetaType.create(pType));
   }
 
   /**
    * @return the name
    */
-  public String getName() {
+  public Identifier getIdentifier() {
     return mName;
   }
 

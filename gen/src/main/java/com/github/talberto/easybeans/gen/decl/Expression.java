@@ -14,20 +14,13 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
+package com.github.talberto.easybeans.gen.decl;
 
 /**
- * Generic DAO
  * 
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
- * @param <T>
  */
-public interface GenericDAO<T> {
+public abstract class Expression extends Sentence {
 
-  public T find(Object pPk);
-  
-  public void save(T pBean);
-  
-  public Class<T> getType();
 }

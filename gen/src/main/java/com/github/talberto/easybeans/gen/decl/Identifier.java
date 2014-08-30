@@ -14,21 +14,36 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
+package com.github.talberto.easybeans.gen.decl;
 
 /**
  * 
- * @author Tomás Rodríguez (rstomasalberto@gmail.com)
+ * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
  */
-public class MetaImport {
-  String mName;
+public class Identifier extends Expression {
+  protected final String mName;
 
-  public MetaImport(String pName) {
-    mName = pName;
+  public static Identifier create(String pName) {
+    return new Identifier(pName);
   }
   
+  protected Identifier(String pName) {
+    mName = pName;
+  }
+
+  /**
+   * @return the name
+   */
   public String getName() {
+    return mName;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
     return mName;
   }
 
@@ -52,22 +67,14 @@ public class MetaImport {
       return true;
     if (obj == null)
       return false;
-    if (!(obj instanceof MetaImport))
+    if (!(obj instanceof Identifier))
       return false;
-    MetaImport other = (MetaImport) obj;
+    Identifier other = (Identifier) obj;
     if (mName == null) {
       if (other.mName != null)
         return false;
     } else if (!mName.equals(other.mName))
       return false;
     return true;
-  }
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    return "MetaImport [mName=" + mName + "]";
   }
 }

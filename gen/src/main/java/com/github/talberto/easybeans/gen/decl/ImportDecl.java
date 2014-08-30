@@ -14,50 +14,24 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
-
-
+package com.github.talberto.easybeans.gen.decl;
 
 /**
- * Holds information about a type
  * 
- * @author Tomas Rodriguez (rodriguez@progiweb.com)
+ * @author Tomás Rodríguez (rstomasalberto@gmail.com)
  *
  */
-public class MetaType {
-  public static final MetaType VOID_TYPE = new MetaType("void");
-  
-  protected final String mPackage;
+public class ImportDecl {
   protected final String mName;
+
+  public static ImportDecl create(String pName) {
+    return new ImportDecl(pName);
+  }
   
-  public static MetaType create(Class<?> pType) {
-    return new MetaType(pType);
-  }
-
-  protected MetaType(Class<?> pType) {
-    mPackage = pType.getPackage().getName();
-    mName = pType.getSimpleName();
-  }
-
-  protected MetaType(String pName) {
-    this(pName, null);
-  }
-
-  protected MetaType(String pName, String pPackage) {
+  protected ImportDecl(String pName) {
     mName = pName;
-    mPackage = pPackage;
   }
   
-  /**
-   * @return the package
-   */
-  public String getPackage() {
-    return mPackage;
-  }
-
-  /**
-   * @return the name
-   */
   public String getName() {
     return mName;
   }
@@ -70,7 +44,6 @@ public class MetaType {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((mName == null) ? 0 : mName.hashCode());
-    result = prime * result + ((mPackage == null) ? 0 : mPackage.hashCode());
     return result;
   }
 
@@ -83,18 +56,13 @@ public class MetaType {
       return true;
     if (obj == null)
       return false;
-    if (!(obj instanceof MetaType))
+    if (!(obj instanceof ImportDecl))
       return false;
-    MetaType other = (MetaType) obj;
+    ImportDecl other = (ImportDecl) obj;
     if (mName == null) {
       if (other.mName != null)
         return false;
     } else if (!mName.equals(other.mName))
-      return false;
-    if (mPackage == null) {
-      if (other.mPackage != null)
-        return false;
-    } else if (!mPackage.equals(other.mPackage))
       return false;
     return true;
   }

@@ -23,7 +23,7 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-  
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -31,18 +31,19 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
+
   <scm>
     <connection>scm:git:git@github.com:talberto/easybeans.git</connection>
     <developerConnection>scm:git:git@github.com:talberto/easybeans.git</developerConnection>
     <url>git@github.com:talberto/easybeans.git</url>
     <tag>HEAD</tag>
   </scm>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
-    <maven.compiler.target>1.6</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>                                 <!-- the language level for the source files -->
+    <maven.compiler.target>1.7</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
   </properties>
 
   <dependencies>

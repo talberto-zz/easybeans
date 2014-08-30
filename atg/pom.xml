@@ -41,8 +41,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
-    <maven.compiler.target>1.6</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>                                 <!-- the language level for the source files -->
+    <maven.compiler.target>1.7</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
   </properties>
 
   <build>

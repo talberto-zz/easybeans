@@ -14,11 +14,21 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
+package com.github.talberto.easybeans.gen.decl;
 
-public class RepositoryMapper {
+import com.google.common.collect.ImmutableList;
 
-  public static void main(String[] pArgs) {
-    
+/**
+ * Models a Java statement
+ * @author Tomas Rodriguez (rodriguez@progiweb.com)
+ *
+ */
+public abstract class Sentence {
+  public static Sentence newAssignment(Identifier pRight, Identifier pLeft) {
+    return Assignment.create(pRight, pLeft);
+  }
+  
+  public static SentenceBlock newSentenceBlock(Sentence... pSentences) {
+    return SentenceBlock.create(ImmutableList.copyOf(pSentences));
   }
 }

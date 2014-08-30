@@ -14,37 +14,36 @@
  *  limitations under the License. 
  */
 
-package com.github.talberto.easybeans.gen;
+package com.github.talberto.easybeans.gen.decl;
 
-
+import com.github.talberto.easybeans.gen.MetaType;
 
 /**
- * Holds information about a bean's property
- * 
+ * Holds information about a method parameter
  * @author Tomas Rodriguez (rodriguez@progiweb.com)
  *
  */
-public class MetaProperty {
-  protected final String mName;
+public class ParameterDecl {
+  protected final Identifier mName;
   protected final MetaType mType;
   
-  public static MetaProperty create(String pName, Class<?> pType) {
-    return new MetaProperty(pName, pType);
-  }
-
-  public MetaProperty(String pName, MetaType pType) {
-    mName = pName;
-    mType = pType;
+  public static ParameterDecl create(String pParamIdent, MetaType pType) {
+    return new ParameterDecl(Identifier.create(pParamIdent), pType);
   }
   
-  public MetaProperty(String pName, Class<?> pType) {
-    this(pName, MetaType.create(pType));
+  public static ParameterDecl create(Identifier pParamIdent, MetaType pType) {
+    return new ParameterDecl(pParamIdent, pType);
+  }
+  
+  protected ParameterDecl(Identifier pParamName, MetaType pType) {
+    mName = pParamName;
+    mType = pType;
   }
 
   /**
    * @return the name
    */
-  public String getName() {
+  public Identifier getName() {
     return mName;
   }
 

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <name>EasyBeans Gen</name>
   <description>EasyBeans Gen</description>
@@ -41,10 +42,31 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.6</maven.compiler.source>                                 <!-- the language level for the source files -->
-    <maven.compiler.target>1.6</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>                                 <!-- the language level for the source files -->
+    <maven.compiler.target>1.7</maven.compiler.target>                                 <!-- the language level for the compiled classes -->
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>-Duser.language=en -Duser.locale=US</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
   <dependencies>
     <dependency>
       <groupId>org.antlr</groupId>
@@ -61,6 +83,17 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <!-- ATG dependencies -->
+    <dependency>
+      <groupId>atg.platform</groupId>
+      <artifactId>DAS</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+    <dependency>
+      <groupId>atg.platform</groupId>
+      <artifactId>DAS</artifactId>
+      <classifier>resources</classifier>
     </dependency>
 
     <!-- Test dependencies -->
@@ -80,21 +113,15 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Easymock -->
+    <!-- Mockito -->
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- PowerMock deps for EasyMock and JUnit > 4.4 https://code.google.com/p/powermock/wiki/EasyMock_maven -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-easymock</artifactId>
+      <groupId>net.sf.atgdust</groupId>
+      <artifactId>atgdust</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

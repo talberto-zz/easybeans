@@ -71,7 +71,7 @@ public class NucleusEntityManagerIT {
   public void setUp() throws Exception {
     mLog.info("Start Nucleus.");
     try {
-      mNucleus = NucleusTestUtils.startNucleusWithModules(new String[] { "DAF.Deployment", "DPS" }, this.getClass(), "");
+      mNucleus = NucleusTestUtils.startNucleusWithModules(new String[] { "DAF.Deployment" }, this.getClass(), "");
       
       assertNotNull(mNucleus);
       mEntityManager = (EntityManager) mNucleus.resolveName("/easybeans/EntityManager");

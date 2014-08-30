@@ -16,58 +16,68 @@
 
 package com.github.talberto.easybeans.gen;
 
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.CaseFormat;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 /**
+ * Holds information about a bean
  * 
- * @author Tomás Rodríguez (rstomasalberto@gmail.com)
- * 
+ * @author Tomas Rodriguez (rodriguez@progiweb.com)
+ *
  */
 public class MetaBean {
-  String mName;
-  List<MetaProperty> mProperties;
-  MetaClass mMetaClass;
-  
-  public MetaBean(String pName, List<MetaProperty> pProperties) {
-    mName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, pName);
-    mProperties = pProperties;
-    
-    // Create MetaClass
-    List<MetaInstanceVar> instanceVars = new LinkedList<MetaInstanceVar>();
-    List<MetaGetter> getters = new LinkedList<MetaGetter>();
-    List<MetaSetter> setters = new LinkedList<MetaSetter>();
-    Set<MetaImport> imports = new HashSet<MetaImport>();
-    for(MetaProperty property : mProperties) {
-      instanceVars.add(property.getInstanceVar());
-      getters.add(property.getGetter());
-      setters.add(property.getSetter());
-      imports.addAll(property.getImports());
+  protected final static Function<MetaProperty, MetaType> sTypeFromProperty = new Function<MetaProperty, MetaType>() {
+    @Override
+    public MetaType apply(MetaProperty pProperty) {
+      return pProperty.getType();
     }
-    mMetaClass = new MetaClass(mName, instanceVars, getters, setters, imports);
+  };
+  
+  private final String mName;
+  private final String mPackage;
+  private final List<MetaProperty> mProperties;
+  
+  public static MetaBean create(String pName, String pPackage, MetaProperty... pProperties) {
+    return new MetaBean(pName, pPackage, ImmutableList.copyOf(pProperties));
+  }
+  
+  public static MetaBean create(String pName, String pPackage, List<MetaProperty> pProperties) {
+    return new MetaBean(pName, pPackage, pProperties);
   }
 
+  protected MetaBean(String pName, String pPackage, List<MetaProperty> pProperties) {
+    mName = pName;
+    mPackage = pPackage;
+    mProperties = ImmutableList.copyOf(pProperties);
+  }
+
+  /**
+   * @return the name
+   */
   public String getName() {
     return mName;
   }
 
+  /**
+   * @return the package
+   */
+  public String getPackage() {
+    return mPackage;
+  }
+
+  /**
+   * @return the properties
+   */
   public List<MetaProperty> getProperties() {
     return mProperties;
   }
 
-  public MetaClass getMetaClass() {
-    return mMetaClass;
-  }
-
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    return "MetaBean [mName=" + mName + ", mProperties=" + mProperties + ", mMetaClass=" + mMetaClass + "]";
+  public Set<MetaType> getReferencedTypes() {
+    return Sets.newHashSet(Collections2.transform(mProperties, sTypeFromProperty));
   }
 }

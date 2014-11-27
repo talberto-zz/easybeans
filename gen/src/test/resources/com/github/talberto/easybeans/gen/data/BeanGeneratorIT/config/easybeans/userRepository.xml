@@ -12,7 +12,6 @@
   <item-descriptor name="user">
     <table name="user" id-column-name="id" type="primary">
       <property name="firstName" data-type="string" />
-      <property name="lastName" data-type="string" />
     </table>
   </item-descriptor>
 </gsa-template>

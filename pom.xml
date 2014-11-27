@@ -64,7 +64,7 @@
     <objenesis.version>1.2</objenesis.version>
     <atg.version>11.1</atg.version>
     <slf4j.version>1.7.7</slf4j.version>
-    <atgdust.version>1.2.2</atgdust.version>             <!-- the version of the ATGDUST module -->
+    <atgdust.version>2.1.0</atgdust.version>             <!-- the version of the ATGDUST module -->
   </properties>
 
   <build>
@@ -214,7 +214,7 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>net.sf.atgdust</groupId>
+        <groupId>com.github.talberto</groupId>
         <artifactId>atgdust</artifactId>
         <version>${atgdust.version}</version>
         <scope>test</scope>

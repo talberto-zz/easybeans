@@ -135,7 +135,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>net.sf.atgdust</groupId>
+      <groupId>com.github.talberto</groupId>
       <artifactId>atgdust</artifactId>
       <scope>test</scope>
     </dependency>

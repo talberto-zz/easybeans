@@ -18,6 +18,7 @@ package com.github.talberto.easybeans.gen;
 
 import static com.google.common.collect.Lists.transform;
 
+import java.util.Collection;
 import java.util.List;
 
 import atg.beans.DynamicPropertyDescriptor;
@@ -25,8 +26,10 @@ import atg.repository.Repository;
 import atg.repository.RepositoryException;
 import atg.repository.RepositoryItemDescriptor;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.ibm.network.mail.base.Map;
 /**
  * An object capable of generating {@link BeanDefinition}'s from a <code>Repository</code>
  * 
@@ -57,13 +60,32 @@ public class BeanGenerator {
       throw new IllegalArgumentException(String.format("Couldn't extract BeanDefintion from repository [%s] and descriptor name [%s]", pRepository, pRepositoryDescriptorName), e);
     }
     
+    String beanName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, pRepositoryDescriptorName);
     List<DynamicPropertyDescriptor> propertyDescriptors = ImmutableList.copyOf(descriptor.getPropertyDescriptors());
     List<PropertyDefinition> propertyDefinitions = transform(propertyDescriptors, mExtractPropertyDefinition);
     
-    return new BeanDefinition(pRepositoryDescriptorName, propertyDefinitions);
+    return new BeanDefinition(beanName, propertyDefinitions);
   }
 
+  /**
+   * Generates a {@link PropertyDefinition} from a given <code>DynamicPropertyDescriptor</code>
+   * 
+   * @param pPropertyDescriptor
+   * @return
+   */
   protected PropertyDefinition generatePropertyDefinition(DynamicPropertyDescriptor pPropertyDescriptor) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    String propertyName = pPropertyDescriptor.getName();
+    Class<?> propertyType = pPropertyDescriptor.getPropertyType();
+    String propertyTypeStr;
+    
+    if(Collection.class.isAssignableFrom(propertyType)) {
+      propertyTypeStr = "List";
+    } else if(Map.class.isAssignableFrom(propertyType)) {
+      propertyTypeStr = "Map";
+    } else {
+      propertyTypeStr = propertyType.getSimpleName();
+    }
+    
+    return new PropertyDefinition(propertyName, propertyTypeStr, true, true);
   }
 }

@@ -40,7 +40,7 @@ public class BeanDefinition {
    * @return
    */
   public String getBeanName() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mBeanName;
   }
 
   /**
@@ -49,6 +49,6 @@ public class BeanDefinition {
    * @return
    */
   public List<PropertyDefinition> getProperties() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mProperties;
   }
 }

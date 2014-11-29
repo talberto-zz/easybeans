@@ -24,13 +24,25 @@ package com.github.talberto.easybeans.gen;
  */
 public class PropertyDefinition {
 
+  protected final String mName;
+  protected final String mType;
+  protected final boolean mReadable;
+  protected final boolean mWritable;
+  
+  public PropertyDefinition(String pName, String pType, boolean pReadable, boolean pWritable) {
+    mName = pName;
+    mType = pType;
+    mReadable = pReadable;
+    mWritable = pWritable;
+  }
+
   /**
    * Gets <code>this</code> property's name
    * 
    * @return
    */
   public String getName() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mName;
   }
 
   /**
@@ -39,7 +51,7 @@ public class PropertyDefinition {
    * @return true if the property is readable, false otherwise
    */
   public Boolean isReadable() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mReadable;
   }
 
   /**
@@ -48,7 +60,7 @@ public class PropertyDefinition {
    * @return true if the property is writable, false otherwise
    */
   public Boolean isWritable() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mWritable;
   }
 
   /**
@@ -57,6 +69,6 @@ public class PropertyDefinition {
    * @return
    */
   public String getType() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return mType;
   }
 }

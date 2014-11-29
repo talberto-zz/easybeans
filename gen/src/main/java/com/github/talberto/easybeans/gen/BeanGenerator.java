@@ -76,6 +76,9 @@ public class BeanGenerator {
   protected PropertyDefinition generatePropertyDefinition(DynamicPropertyDescriptor pPropertyDescriptor) {
     String propertyName = pPropertyDescriptor.getName();
     Class<?> propertyType = pPropertyDescriptor.getPropertyType();
+    boolean readable = pPropertyDescriptor.isReadable();
+    boolean writable = pPropertyDescriptor.isWritable();
+    
     String propertyTypeStr;
     
     if(Collection.class.isAssignableFrom(propertyType)) {
@@ -86,6 +89,6 @@ public class BeanGenerator {
       propertyTypeStr = propertyType.getSimpleName();
     }
     
-    return new PropertyDefinition(propertyName, propertyTypeStr, true, true);
+    return new PropertyDefinition(propertyName, propertyTypeStr, readable, writable);
   }
 }

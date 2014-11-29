@@ -47,12 +47,12 @@ import atg.repository.RepositoryItemDescriptor;
  * @author Tomás Rodríguez (rodriguez@progiweb.com)
  *
  */
-public class BeanGeneratorIT {
+public class RepositoryBeanGeneratorIT {
 
   Logger mLog = LoggerFactory.getLogger(this.getClass());
   Nucleus mNucleus = null;
   Repository mUserRepository;
-  BeanGenerator mBeanGenerator;
+  RepositoryBeanGenerator mBeanGenerator;
   
   @Before
   public void setUp() throws Exception {
@@ -63,7 +63,7 @@ public class BeanGeneratorIT {
       assertNotNull(mNucleus);
       mUserRepository = (Repository) mNucleus.resolveName("/easybeans/UserRepository");
       assertNotNull(mUserRepository);
-      mBeanGenerator = (BeanGenerator) mNucleus.resolveName("/easybeans/BeanGenerator");
+      mBeanGenerator = (RepositoryBeanGenerator) mNucleus.resolveName("/easybeans/RepositoryBeanGenerator");
       assertNotNull(mBeanGenerator);
     } catch (ServletException e) {
       fail(e.getMessage());

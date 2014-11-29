@@ -1,0 +1,17 @@
+property_definition(property) ::= <<
+  protected <property.type> <property.name>;
+
+  public <property.type> get<property.camelName>() {
+    return this.<property.name>;
+  }
+  
+  public void set<property.camelName>(<property.type> <property.name>) {
+    this.<property.name> = <property.name>;
+  }
+>>
+
+bean_definition(bean) ::= <<
+public class <bean.beanName> {
+  <bean.properties:property_definition()>
+}
+>>

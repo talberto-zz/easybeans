@@ -20,6 +20,7 @@ import static com.google.common.collect.Lists.transform;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import atg.beans.DynamicPropertyDescriptor;
 import atg.repository.Repository;
@@ -29,14 +30,14 @@ import atg.repository.RepositoryItemDescriptor;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.ibm.network.mail.base.Map;
+
 /**
  * An object capable of generating {@link BeanDefinition}'s from a <code>Repository</code>
  * 
  * @author Tomás Rodríguez (rodriguez@progiweb.com)
  *
  */
-public class BeanGenerator {
+public class RepositoryBeanGenerator {
   
   protected final Function<DynamicPropertyDescriptor, PropertyDefinition> mExtractPropertyDefinition = new Function<DynamicPropertyDescriptor, PropertyDefinition>() {
     @Override

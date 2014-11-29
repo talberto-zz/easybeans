@@ -16,6 +16,8 @@
 
 package com.github.talberto.easybeans.gen;
 
+import com.google.common.base.CaseFormat;
+
 /**
  * Describes a property of a bean that is about to be created (doesn't exist yet).
  * 
@@ -43,6 +45,10 @@ public class PropertyDefinition {
    */
   public String getName() {
     return mName;
+  }
+  
+  public String getCamelName() {
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, mName);
   }
 
   /**

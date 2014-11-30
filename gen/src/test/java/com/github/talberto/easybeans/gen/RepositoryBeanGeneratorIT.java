@@ -16,8 +16,8 @@
 
 package com.github.talberto.easybeans.gen;
 
+import static com.github.talberto.easybeans.gen.TestUtils.findDescriptorByName;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -41,6 +41,8 @@ import atg.nucleus.ServiceException;
 import atg.repository.Repository;
 import atg.repository.RepositoryException;
 import atg.repository.RepositoryItemDescriptor;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * 
@@ -84,7 +86,10 @@ public class RepositoryBeanGeneratorIT {
     }
   }
   
-  @Test public void generateUserBean() {
+  @Test public void generateUserBean() throws RepositoryException {
+    RepositoryItemDescriptor itemDescriptor = mUserRepository.getItemDescriptor("user");
+    assertThat("The item descriptor is null", itemDescriptor, notNullValue());
+    
     BeanDefinition beanDefinition = mBeanGenerator.generateBean(mUserRepository, "user");
     
     assertThat("Returned bean definition is null", beanDefinition, notNullValue());
@@ -92,28 +97,20 @@ public class RepositoryBeanGeneratorIT {
     
     List<PropertyDefinition> properties = beanDefinition.getProperties();
     
-    assertThat("List of properties is null", properties, notNullValue());
-    assertThat("List of properties is empty", properties, hasSize(1));
-    
-    PropertyDefinition property = properties.get(0);
-    
-    assertThat("Incorrect property name", property.getName(), equalTo("firstName"));
-    assertThat("Property firstName should be readable", property.isReadable(), equalTo(true));
-    assertThat("Property firstName should be writable", property.isWritable(), equalTo(true));
-    assertThat("Property firstName incorrect type", property.getType(), equalTo("String"));
+    checkProperties(ImmutableList.copyOf(itemDescriptor.getPropertyDescriptors()), properties);
+  }
+
+  private void checkProperties(List<DynamicPropertyDescriptor> pPropertyDescriptors, List<PropertyDefinition> pPropertyDefinitions) {    
+    for(PropertyDefinition propertyDefinition : pPropertyDefinitions) {
+      DynamicPropertyDescriptor propertyDescriptor = (DynamicPropertyDescriptor) findDescriptorByName(pPropertyDescriptors, propertyDefinition.getName());
+      checkProperty(propertyDescriptor, propertyDefinition);
+    }
   }
   
-  @Test public void testGeneratePropertyDefinition() throws RepositoryException {
-    RepositoryItemDescriptor itemDescriptor = mUserRepository.getItemDescriptor("user");
-    assertThat("The item descriptor is null", itemDescriptor, notNullValue());
-    DynamicPropertyDescriptor propertyDescriptor = itemDescriptor.getPropertyDescriptor("firstName");
-    assertThat("The property descriptor is null", propertyDescriptor, notNullValue());
-    
-    PropertyDefinition property = mBeanGenerator.generatePropertyDefinition(propertyDescriptor);
-    
-    assertThat("Incorrect property name", property.getName(), equalTo("firstName"));
-    assertThat("Property firstName should be readable", property.isReadable(), equalTo(true));
-    assertThat("Property firstName should be writable", property.isWritable(), equalTo(true));
-    assertThat("Property firstName incorrect type", property.getType(), equalTo("String"));
+  private void checkProperty(DynamicPropertyDescriptor pPropertyDescriptor, PropertyDefinition pPropertyDefinition) {
+    assertThat("Incorrect property name", pPropertyDefinition.getName(), equalTo(pPropertyDescriptor.getName()));
+    assertThat("Incorrect readable attribute", pPropertyDefinition.isReadable(), equalTo(pPropertyDescriptor.isReadable()));
+    assertThat("Incorrect writable attribute", pPropertyDefinition.isWritable(), equalTo(pPropertyDescriptor.isWritable()));
+    assertThat("Incorrect type attribute", pPropertyDefinition.getType(), equalTo(pPropertyDescriptor.getPropertyType().getSimpleName()));
   }
 }

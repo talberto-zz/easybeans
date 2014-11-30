@@ -18,9 +18,7 @@ package com.github.talberto.easybeans.gen;
 
 import static com.google.common.collect.Lists.transform;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import atg.beans.DynamicPropertyDescriptor;
 import atg.repository.Repository;
@@ -79,16 +77,7 @@ public class RepositoryBeanGenerator {
     Class<?> propertyType = pPropertyDescriptor.getPropertyType();
     boolean readable = pPropertyDescriptor.isReadable();
     boolean writable = pPropertyDescriptor.isWritable();
-    
-    String propertyTypeStr;
-    
-    if(Collection.class.isAssignableFrom(propertyType)) {
-      propertyTypeStr = "List";
-    } else if(Map.class.isAssignableFrom(propertyType)) {
-      propertyTypeStr = "Map";
-    } else {
-      propertyTypeStr = propertyType.getSimpleName();
-    }
+    String propertyTypeStr = propertyType.getSimpleName();
     
     return new PropertyDefinition(propertyName, propertyTypeStr, readable, writable);
   }

@@ -16,8 +16,13 @@
 
 package com.github.talberto.easybeans.gen;
 
+import java.beans.FeatureDescriptor;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  * Some utils for testing purposes...
@@ -42,5 +47,18 @@ public class TestUtils {
         return true;
       }
     } while(true);
+  }
+  
+  public static FeatureDescriptor findDescriptorByName(List<? extends FeatureDescriptor> pPropertyDescriptors, final String pName) {
+    return Iterables.find(pPropertyDescriptors, new Predicate<FeatureDescriptor>() {
+      @Override
+      public boolean apply(FeatureDescriptor pPropertyDescriptor) {
+        if(pPropertyDescriptor.getName().equals(pName)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    });
   }
 }

@@ -16,17 +16,22 @@
 
 package com.github.talberto.easybeans.gen;
 
+import static com.github.talberto.easybeans.gen.TestUtils.findDescriptorByName;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 
 import javax.tools.SimpleJavaFileObject;
 
@@ -42,12 +47,17 @@ public class BeanRendererTest {
   BeanRenderer renderer;
   
   @Before public void setup() {
-    PropertyDefinition property = new PropertyDefinition("firstName", "String", true, true);
-    bean = new BeanDefinition("User", ImmutableList.of(property));
+    List<PropertyDefinition> properties = ImmutableList.<PropertyDefinition>builder()
+        .add(new PropertyDefinition("firstName", "String", true, true))
+        .add(new PropertyDefinition("age", "int", true, true))
+        .add(new PropertyDefinition("points", "double", true, true))
+        .add(new PropertyDefinition("premiumUser", "boolean", true, true))
+        .build();
+    bean = new BeanDefinition("UserBean", properties);
     renderer = new BeanRenderer();
   }
   
-  @Test public void testRender() throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException {
+  @Test public void testRender() throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, NoSuchFieldException, IntrospectionException {
     String generatedCode = renderer.render(bean);
     assertThat("The generated source code is null", generatedCode, notNullValue());
     
@@ -63,17 +73,32 @@ public class BeanRendererTest {
     loader.close();
     
     // Check the fields
-    Field[] fields = beanGeneratedClass.getDeclaredFields();
-    assertThat("The number of fields is incorrect", fields, arrayWithSize(1));
-    Field firstNameField = fields[0];
-    assertThat("Incorrect field name", firstNameField.getName(), equalTo("firstName"));
+    checkFields(bean, beanGeneratedClass);
     
     // Check the methods
-    Method[] allMethods = beanGeneratedClass.getDeclaredMethods();
-    assertThat("The number of methods is incorrect", allMethods, arrayWithSize(2));
-    Method getterMethod = beanGeneratedClass.getDeclaredMethod("getFirstName");
-    assertThat("Incorrect getter name", getterMethod.getName(), equalTo("getFirstName"));
-    Method setterMethod = beanGeneratedClass.getDeclaredMethod("setFirstName", String.class);
-    assertThat("Incorrect setter name", setterMethod.getName(), equalTo("setFirstName"));
+    checkProperties(bean, beanGeneratedClass);
+  }
+
+  private void checkProperties(BeanDefinition pBeanDefinition, Class<?> pBeanGeneratedClass) throws NoSuchMethodException, IntrospectionException {
+    assertThat("The number of fields is incorrect", pBeanGeneratedClass.getDeclaredFields(), arrayWithSize(pBeanDefinition.getProperties().size()));
+    BeanInfo beanInfo = Introspector.getBeanInfo(pBeanGeneratedClass);
+    List<PropertyDescriptor> propertyDescriptors = ImmutableList.copyOf(beanInfo.getPropertyDescriptors());
+    
+    for(PropertyDefinition propertyDefinition : pBeanDefinition.getProperties()) {
+      PropertyDescriptor propertyDescriptor = (PropertyDescriptor) findDescriptorByName(propertyDescriptors, propertyDefinition.getName());
+      assertThat("The property type don't match", propertyDescriptor.getPropertyType().getSimpleName(), equalTo(propertyDefinition.getType()));
+      assertThat("The readable attribute doesn't match", propertyDescriptor.getReadMethod() != null, equalTo(propertyDefinition.isReadable()));
+      assertThat("The writable attribute doesn't match", propertyDescriptor.getWriteMethod() != null, equalTo(propertyDefinition.isWritable()));
+    }
+  }
+
+  private void checkFields(BeanDefinition pBeanDefinition, Class<?> pBeanGeneratedClass) throws NoSuchFieldException, SecurityException {
+    assertThat("The number of fields is incorrect", pBeanGeneratedClass.getDeclaredFields(), arrayWithSize(pBeanDefinition.getProperties().size()));
+    
+    for(PropertyDefinition property : pBeanDefinition.getProperties()) {
+      Field field = pBeanGeneratedClass.getDeclaredField(property.getName());
+      assertThat("Incorrect field name", field.getName(), equalTo(property.getName()));
+      assertThat("Incorrect field type", field.getType().getSimpleName(), equalTo(property.getType()));
+    }
   }
 }
